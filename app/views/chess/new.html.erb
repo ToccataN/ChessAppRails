@@ -1,0 +1,28 @@
+<h1>CHESS!!!</h1>
+
+<%= tag.div(@cpu, class: %w(name)) %>
+<div id = 'backboard'>
+
+
+
+<% @arr.each_with_index do |i, j | %>
+  <% @arr[j].each_with_index do |c, s| %>
+   <% letter = ('a'..'h').to_a %>
+   <% number = (1..8).to_a.reverse %>
+   <% pos = [j, s] %>
+   <% int = "#{number[j]}#{letter[s]}" %>
+   <%  c[0] == 0 || c[1] == "unknown" ? view = int : view = image_tag("#{c[0]}#{c[1]}.png") %>
+   <%   %>
+   <% if j % 2 === 0 %>
+     <%=  s%2 === 1 ? content_tag("div", view , class:  %w(squarer), data:  {val: pos})  : content_tag( "div", view, class: %w(squareb), data:  {val: pos} ) %>
+   <% else %> 
+     <%=  s%2 === 0 ?  content_tag("div", view, class:  %w(squarer), data:  {val: pos} ) : content_tag("div", view, class: %w(squareb),  data:  {val: pos} ) %>
+   <% end %>
+  <% end %>
+<% end %>
+
+
+</div>
+
+<%= tag.div(@player, class: %w(name)) %>
+<%= @arr %>

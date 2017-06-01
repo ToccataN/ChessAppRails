@@ -1,0 +1,58 @@
+// Place all the styles related to the Chess controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+$length: 600px;
+$sq: $length/8 -1;
+
+@mixin square($length){
+	width: 71px ; 
+	height: 71px;
+	display: inline-flex;
+	flex-flow: row wrap;
+	justify-content: space-around;
+	flex: none;
+	border: 1px black solid;
+	padding-right: -5px;
+	margin-right: -3px;
+	color: #13aa25;
+	font-size: 10pt;
+	font-weight: bold;
+}
+
+#backboard {
+    margin: 0 auto;
+	width: $length;
+	height: $length;
+	background-color: black;
+	padding: 15px;
+}
+
+.squarer {
+	@include square($length);
+    background-color: red;
+ }
+.squareb {
+	@include square($length);
+    background-color: #1a1b99;
+ }
+
+.name {
+	font-size: 18pt;
+	font-weight: bold;
+	font-family: caslon;
+	color: #dd1133;
+}
+
+ img {
+    width : 50px;
+    height: 50px;
+    padding: 0px;
+    margin: 0px;
+ }
+
+.selected {
+	border: 2px green solid;
+}
+
+
