@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
   <head>
     <title>ChessApp</title>
@@ -9,6 +10,9 @@
   </head>
 
   <body>
+  	<% content_for(:body_attributes) do %>
+       data-no-turbolink="true"
+    <% end %>
     <%= yield %>
   </body>
 </html>

@@ -1,17 +1,44 @@
+
 $(document).ready(function(){
+    $("#backboard div").removeClass("selected");
+    var count = 0;
+    var sp;
+    var sv;
+
     $("#backboard").on("click", "div", function(e){
-        $("#backboard div").removeClass("selected");
         var val = $(this).data('val');
-        $.ajax ({
-        	type: 'POST',
-        	url: "https://localhost:3000/chess/:pos",
-        	data: {pos: {value: val}},
-        	success: function(d){
-        	  if(d === true){
-        		$(this).addClass("selected").append("<p>"+val+"<p>");
-        	  }
-        	}
-        });
+        var me = $(this)
+        
+        if (count % 2 == 0){
+            $("#backboard div").removeClass("selected");
+            $.ajax ({
+             type: 'POST',
+             url: "http://localhost:3000/chess/"+val,
+             success: function(d){
+                if(d === true){
+                  me.addClass("selected");
+                  count +=1;
+                  sp = me;
+                  sv = val;
+                }
+            }
+            });
+        } else {
+           $.ajax ({
+             type: 'POST',
+             url: "http://localhost:3000/chess/" + sv + "/" + val,
+             success: function(d){
+                count = 0;
+                window.location.reload();
+             }
+              
+           });
+           
+           
+        }
+
+
+        
    });
 });
 

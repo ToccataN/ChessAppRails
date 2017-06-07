@@ -1,10 +1,6 @@
-<h1>CHESS!!!</h1>
-
-<%= tag.div(@cpu, class: %w(name)) %>
-<div id = 'backboard'>
 
 
-
+<div id="#backboard" >
 <% @arr.each_with_index do |i, j | %>
   <% @arr[j].each_with_index do |c, s| %>
    <% letter = ('a'..'h').to_a %>
@@ -20,9 +16,4 @@
    <% end %>
   <% end %>
 <% end %>
-
-
 </div>
-
-<%= tag.div(@player, class: %w(name)) %>
-<%= @arr %>
