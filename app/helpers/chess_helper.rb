@@ -21,14 +21,14 @@ module ChessHelper
 		    else
 		    	return "try another color, white or black"
 		    end
-            @boardPos = [['r','k','b','ki','q','b','k','r'],
+            @boardPos = [['r','k','b','q','ki','b','k','r'],
                         ['p','p','p','p','p','p','p','p'],
                         [0,0,0,0,0,0,0,0],
                         [0,0,0,0,0,0,0,0],
                         [0,0,0,0,0,0,0,0],
                         [0,0,0,0,0,0,0,0],
                         ['p','p','p','p','p','p','p','p'],
-                        ['r','k','b','ki','q','b','k','r']]
+                        ['r','k','b','q','ki','b','k','r']]
            
            end
          
@@ -240,7 +240,7 @@ class Knight
     
     a =[[1, 2],[-1, -2],[-1, 2] ,[1, -2] , [2, 1] , [-2, -1], [-2, 1] ,[2, -1]]
     a.each do |i|
-      if ((@curpos[0]+i[0] > 0) && (@curpos[0]+i[0] < 8)) && ((@curpos[1]+ i[1] > 0) && (@curpos[1]+ i[1] < 8))
+      if ((@curpos[0]+i[0] >= 0) && (@curpos[0]+i[0] < 8)) && ((@curpos[1]+ i[1] >= 0) && (@curpos[1]+ i[1] < 8))
         p.push([@curpos[0]+i[0], @curpos[1]+ i[1]])
       end
     end
