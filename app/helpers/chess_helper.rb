@@ -22,13 +22,13 @@ module ChessHelper
 		    	return "try another color, white or black"
 		    end
             @boardPos = [['r','k','b','q','ki','b','k','r'],
-                        ['p','p','p','p','p','p','p','p'],
+                        ['p','p','p','b','p','p','p','p'],
                         [0,0,0,0,0,0,0,0],
                         [0,0,0,0,0,0,0,0],
                         [0,0,0,0,0,0,0,0],
                         [0,0,0,0,0,0,0,0],
-                        ['p','p','p','p','p','p','p','p'],
-                        ['r','k','b','q','ki','b','k','r']]
+                        ['p','p','p','q','p','p','p','p'],
+                        ['r','k','b','ki','q','b','k','r']]
            
            end
          
@@ -74,8 +74,14 @@ module ChessHelper
            def cpuColor
              @cpu.color
            end
-
            
+           def playerCheck
+             @player.checkState
+           end
+           
+           def cpuCheck
+             @cpu.checkState
+           end
 	  
 	end
 
@@ -94,6 +100,9 @@ class Player
    def name
    	  @name
    	end
+    def checkState
+       false
+    end
 end
 
 class Cpu 
@@ -107,10 +116,12 @@ class Cpu
    def color
    	  @color
    	end
-def name
+   def name
    	  @name
    	end
-
+    def checkState
+      false
+    end
 
 
 end
