@@ -7,6 +7,9 @@ class ChessController < ApplicationController
 @@player
 @@game
 
+@@playerCheckmate = false
+@@cpuCheckmate = false
+
   def new
   	
   	@game = Game.new("white", "ARSEFACE!!!")
@@ -69,7 +72,11 @@ class ChessController < ApplicationController
       end
       
       @@cpuCheck = check?(@@cpucolor, @@playercolor, @@arr)
-     
+      if @@cpuCheck
+        @@cpuCheckmate = checkMate?(@@cpucolor, @@playercolor, @@arr)
+        puts "Checkmate? #{@@cpuCheckmate}"
+      end
+
       redirect_to update_path 
     
 
@@ -90,7 +97,7 @@ class ChessController < ApplicationController
 
      if indS != indP
      
-       if ((p[0] != s[0] || s[0] === 0)) && (checkBetween(p.last, indS, indP, arr)) 
+       if ((p[0] != s[0] || s[0] === 0)) && (checkBetween(p.last, indS, indP, arr, p)) 
        	 bool = p.last.any? {|x| x === [c,d]}
        else
        
@@ -100,7 +107,7 @@ class ChessController < ApplicationController
      bool
     end
 
-    def checkBetween(moves, ind, indP, boardArr)
+    def checkBetween(moves, ind, indP, boardArr, pl)
       rl = []
       ud =[]
       diag1 = []
@@ -136,7 +143,7 @@ class ChessController < ApplicationController
       end
 
       if piece == "pawn"
-        bool = pawnLogic(moves, ind, indP, start, boardArr)
+        bool = pawnLogic(moves, ind, indP, start, boardArr, pl)
       elsif ind[0] === indP[0]
        arr = rl.map {|x| x = [ind[0], x]}
         arr.shift
@@ -170,7 +177,7 @@ class ChessController < ApplicationController
 
            
             if arr != nil && b != nil && a != nil
-             #puts " #{arr}  #{a}  #{b}  #{@@arr[a][b]}"
+             
               if boardArr[a][b] != [0]
            	   bool =false
               end
@@ -178,28 +185,41 @@ class ChessController < ApplicationController
           end
        end
       
-    
+      puts " piece: #{piece} curpos: #{indP} possible? #{bool}   "
    
 
       bool
 
     end
     
-    def pawnLogic(moves, sq, pl, st, arr)
+    def pawnLogic(moves, sq, pl, st, arr, player)
       array =[]
       move = moves
       bool = true
       
-      att1 = arr[pl[0]+1][pl[1]+1]
-      att2 = arr[pl[0]+1][pl[1]-1]
       
-      if arr[pl[0]-1][pl[1]+1] != nil
+      if arr[pl[0]+1][pl[1]+1] != nil
+        att1 = arr[pl[0]+1][pl[1]+1]
+      else
+        att1 = arr[pl[0]+1][pl[1]+1]
+      end
+      
+      if arr[pl[0]+1][pl[1]-1] != nil
+        att2 = arr[pl[0]+1][pl[1]-1]
+      else
+        att2 = arr[pl[0]+1][pl[1]-1]
+      end
+      
+      if arr[pl[0]-1][pl[1]+1] != [0]
         att3 = arr[pl[0]-1][pl[1]+1]
       else
-        att3= arr[pl[0]-1][pl[1]]
+        att3 = arr[pl[0]-1][pl[1]+1]
       end
-      if arr[pl[0]-1][pl[1]-1] != nil
+
+      if arr[pl[0]-1][pl[1]-1] != [0]
         att4 = arr[pl[0]-1][pl[1]-1]
+      else
+         att4 = arr[pl[0]-1][pl[1]-1]
       end
 
       if sq[1] === pl[1] && sq[0] > pl[0] 
@@ -215,28 +235,29 @@ class ChessController < ApplicationController
              bool =false
            end
       end
+      puts " me!!!!!    #{att1}"
+      if st === 1  && (att1 != nil || att2 != nil)
 
-      if st === 1  && att1 != nil && att2 != nil
-        if att1[0] != @@playercolor && att1 != [0] 
-          move.push([pl[0]+1, pl[1]+1])
+        if att1 != nil
+            (att1[0] != player[0] && att1 != [0] && !move.include?([pl[0]+1, pl[1]+1]) ) ?  move.push([pl[0]+1, pl[1]+1]) : 0
         end
-        if att2[0] != @@playercolor && att2 != [0]
-           move.push([pl[0]+1, pl[1]-1])
+        if att2 != nil
+          (att2[0] != player[0] && att2 != [0] && !move.include?([pl[0]+1, pl[1]-1])) ?  move.push([pl[0]+1, pl[1]-1]) : 0
         end
-      elsif st === 6 && att3 != nil && att4 != nil
-        if att3[0] != @@playercolor && att3 != [0]
-          move.push([pl[0]-1, pl[1]+1])
+      elsif st === 6 && (att3 != nil || att4 != nil)
+        if att3 != nil 
+         (att3[0] != player[0] && att3 != [0] && !move.include?([pl[0]-1, pl[1]+1])) ? move.push([pl[0]-1, pl[1]+1]) : 0
         end
-        if att4[0] != @@playercolor && att4 != [0]
-           move.push([pl[0]-1, pl[1]-1])
+        if 
+        (att4[0] != player[0] && att4 != [0] && !move.include?([pl[0]-1, pl[1]-1]) )  ?  move.push([pl[0]-1, pl[1]-1]) : 0
         end
       end
+
       move.each do |x| 
         if x[1] === pl[1] && arr[x[0]][x[1]] != [0] 
           move.delete(x) 
         end
       end
-      
       bool = move.include?(sq)
 
       bool
@@ -284,14 +305,33 @@ class ChessController < ApplicationController
         end
       end
       
-
-
       bool = !check?(c1, c2, array)
-      puts "#{a} #{b} #{c} #{d} num: #{array} "
+      puts "#{a} #{b} #{c} #{d}"
       bool
-    
+    end
 
+    def checkMate?(color1, color2, array)
+      bool = false
+      possibleMoves =[]
+        array.each do |i|
+          i.each do |j|
+            if j[0] === color1 && j[0] != [0]
 
+               j.last.each do |x| 
+                if possible(j, array[x[0]][x[1]], j[3][0], j[3][1], x[0], x[1], array) && preCheck(j[3][0], j[3][1], x[0], x[1], j, color1, color2) 
+                  possibleMoves.push([j[0], j[2], x]) 
+                end
+              end 
+            end
+          end
+        end
+      
+       puts "possible moves: #{possibleMoves}"
+       if possibleMoves.empty?
+         bool = true
+       end
+
+       bool
 
     end
 
