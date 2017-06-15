@@ -22,13 +22,13 @@ module ChessHelper
 		    	return "try another color, white or black"
 		    end
             @boardPos = [['r','k','b','q','ki','b','k','r'],
-                        ['p','p','p','b','p','p','p','p'],
+                        ['p','p','p','p','p','p','p','p'],
                         [0,0,0,0,0,0,0,0],
                         [0,0,0,0,0,0,0,0],
                         [0,0,0,0,0,0,0,0],
                         [0,0,0,0,0,0,0,0],
-                        ['p','p','p','q','p','p','p','p'],
-                        ['r','k','b','ki','q','b','k','r']]
+                        ['p','p','p','p','p','p','p','p'],
+                        ['r','k','b','q','ki','b','k','r']]
            
            end
          

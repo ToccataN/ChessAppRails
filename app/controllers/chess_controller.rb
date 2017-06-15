@@ -24,6 +24,8 @@ class ChessController < ApplicationController
     @@player = @player
     @@playerCheck = @game.playerCheck
     @@cpuCheck = @game.cpuCheck
+    
+    @@counter = 1
 
   end
 
@@ -55,9 +57,15 @@ class ChessController < ApplicationController
       pieceVal = @@arr[a][b]
       squareVal = @@arr[c][d]
 
-       
+      array = Array.new(8){Array.new(8)}
       
-      if possible(pieceVal, squareVal, a, b, c, d, @@arr)  && preCheck(a, b, c, d, pieceVal, @@playercolor, @@cpucolor)
+      array = array.each_with_index.map do |i, x|
+        i.each_with_index.map  do |j, y|
+             j = @@arr[x][y]
+        end
+      end
+      
+      if possible(pieceVal, squareVal, a, b, c, d, array, false)  && preCheck(a, b, c, d, pieceVal, @@playercolor, @@cpucolor)
       @@arr = @@arr.each_with_index.map do | e1, i1|
         @@arr[i1].each_with_index.map do |e2, i2|
            if (i1 === a && i2 ===b)
@@ -69,15 +77,27 @@ class ChessController < ApplicationController
            end
         end
       end
-      end
-      
-      @@cpuCheck = check?(@@cpucolor, @@playercolor, @@arr)
-      if @@cpuCheck
-        @@cpuCheckmate = checkMate?(@@cpucolor, @@playercolor, @@arr)
-        puts "Checkmate? #{@@cpuCheckmate}"
+
+     array = array.each_with_index.map do |i, x|
+        i.each_with_index.map  do |j, y|
+             j = @@arr[x][y]
+        end
       end
 
+      @@cpuCheck = check?(@@cpucolor, @@playercolor, array)
+      if @@cpuCheck
+        @@cpuCheckmate = checkMate?(@@cpucolor, @@playercolor, array)
+        puts "Checkmate? #{@@cpuCheckmate}"
+      end
+      cpumove(@@cpucolor, @@playercolor, @@arr)
+        
+      @@counter += 1
+
       redirect_to update_path 
+
+      end
+      
+      
     
 
 
@@ -89,15 +109,16 @@ class ChessController < ApplicationController
       @player = @@player
     end
     
-    def possible(p, s, a, b, c, d, arr)
+    def possible(p, s, a, b, c, d, arr, checking)
      indS = [c,d]     
      indP = [a, b]
      bool = false
      piece = arr[a][b]
 
+
      if indS != indP
      
-       if ((p[0] != s[0] || s[0] === 0)) && (checkBetween(p.last, indS, indP, arr, p)) 
+       if ((p[0] != s[0] || s[0] === 0)) && (checkBetween(p.last, indS, indP, arr, p, checking)) 
        	 bool = p.last.any? {|x| x === [c,d]}
        else
        
@@ -107,12 +128,15 @@ class ChessController < ApplicationController
      bool
     end
 
-    def checkBetween(moves, ind, indP, boardArr, pl)
+    def checkBetween(moves, ind, indP, boardArr, pl, checking)
       rl = []
       ud =[]
       diag1 = []
       diag2 = []
       bool = true
+      
+     
+
 
       a = boardArr[indP[0]][indP[1]]
       piece = a[2]
@@ -143,7 +167,7 @@ class ChessController < ApplicationController
       end
 
       if piece == "pawn"
-        bool = pawnLogic(moves, ind, indP, start, boardArr, pl)
+        bool = pawnLogic(moves, ind, indP, start, boardArr, pl, checking)
       elsif ind[0] === indP[0]
        arr = rl.map {|x| x = [ind[0], x]}
         arr.shift
@@ -185,47 +209,42 @@ class ChessController < ApplicationController
           end
        end
       
-      puts " piece: #{piece} curpos: #{indP} possible? #{bool}   "
+      #puts " piece: #{piece} curpos: #{indP} possible? #{bool}   "
    
 
       bool
 
     end
     
-    def pawnLogic(moves, sq, pl, st, arr, player)
+    def pawnLogic(moves, sq, pl, st, arr, player, checking)
       array =[]
       move = moves
       bool = true
       
-      
-      if arr[pl[0]+1][pl[1]+1] != nil
-        att1 = arr[pl[0]+1][pl[1]+1]
-      else
-        att1 = arr[pl[0]+1][pl[1]+1]
-      end
-      
-      if arr[pl[0]+1][pl[1]-1] != nil
-        att2 = arr[pl[0]+1][pl[1]-1]
-      else
-        att2 = arr[pl[0]+1][pl[1]-1]
-      end
-      
-      if arr[pl[0]-1][pl[1]+1] != [0]
-        att3 = arr[pl[0]-1][pl[1]+1]
-      else
-        att3 = arr[pl[0]-1][pl[1]+1]
-      end
-
-      if arr[pl[0]-1][pl[1]-1] != [0]
-        att4 = arr[pl[0]-1][pl[1]-1]
-      else
-         att4 = arr[pl[0]-1][pl[1]-1]
+      if st === 1 
+        if arr[pl[0]+1][pl[1]+1] != nil 
+          att1 = arr[pl[0]+1][pl[1]+1]
+          (att1[0] != player[0] && att1 != [0] && !move.include?([pl[0]+1, pl[1]+1]) ) ?  move.push([pl[0]+1, pl[1]+1]) : 0
+        end
+        if arr[pl[0]+1][pl[1]-1] != nil
+          att2 = arr[pl[0]+1][pl[1]-1]
+          (att2[0] != player[0] && att2 != [0] && !move.include?([pl[0]+1, pl[1]-1])) ?  move.push([pl[0]+1, pl[1]-1]) : 0
+        end
+      elsif st === 6
+         if arr[pl[0]-1][pl[1]+1] != [0] && pl[1]+1 < 8
+           att3 = arr[pl[0]-1][pl[1]+1]
+           (att3[0] != player[0] && att3 != [0] && !move.include?([pl[0]-1, pl[1]+1])) ? move.push([pl[0]-1, pl[1]+1]) : 0
+         end
+         if arr[pl[0]-1][pl[1]-1] != [0] && pl[1]-1 > -1
+           att4 = arr[pl[0]-1][pl[1]-1]
+           (att4[0] != player[0] && att4 != [0] && !move.include?([pl[0]-1, pl[1]-1]) )  ?  move.push([pl[0]-1, pl[1]-1]) : 0
+         end
       end
 
       if sq[1] === pl[1] && sq[0] > pl[0] 
         (pl[0]...sq[0]).to_a.each {|x| array.push(x)}
       elsif sq[1] === pl[1] && sq[0] < pl[0] 
-        (sq[0]...pl[0]).to_a.each { |x| array.push(x)}
+        (sq[0]...pl[0]).to_a.reverse.each { |x| array.push(x)}
       end
       
       array = array.map {|x| x = [pl[0], x]}
@@ -235,26 +254,9 @@ class ChessController < ApplicationController
              bool =false
            end
       end
-      puts " me!!!!!    #{att1}"
-      if st === 1  && (att1 != nil || att2 != nil)
-
-        if att1 != nil
-            (att1[0] != player[0] && att1 != [0] && !move.include?([pl[0]+1, pl[1]+1]) ) ?  move.push([pl[0]+1, pl[1]+1]) : 0
-        end
-        if att2 != nil
-          (att2[0] != player[0] && att2 != [0] && !move.include?([pl[0]+1, pl[1]-1])) ?  move.push([pl[0]+1, pl[1]-1]) : 0
-        end
-      elsif st === 6 && (att3 != nil || att4 != nil)
-        if att3 != nil 
-         (att3[0] != player[0] && att3 != [0] && !move.include?([pl[0]-1, pl[1]+1])) ? move.push([pl[0]-1, pl[1]+1]) : 0
-        end
-        if 
-        (att4[0] != player[0] && att4 != [0] && !move.include?([pl[0]-1, pl[1]-1]) )  ?  move.push([pl[0]-1, pl[1]-1]) : 0
-        end
-      end
 
       move.each do |x| 
-        if x[1] === pl[1] && arr[x[0]][x[1]] != [0] 
+        if x[1] === pl[1] && arr[x[0]][x[1]] != [0] && !checking
           move.delete(x) 
         end
       end
@@ -263,22 +265,37 @@ class ChessController < ApplicationController
       bool
     end
      
-    def check?(color1, color2, array) 
+    def check?(color1, color2, arr, piece = nil) 
       bool = false
       kingPos = [0,0] 
+
+
+
+      array = Array.new(8){Array.new(8)}
+      
+      array = array.each_with_index.map do |i, x|
+        i.each_with_index.map  do |j, y|
+            j = arr[x][y]
+        end
+      end
+
       array.each do |i|
          i.each do |j|
-           if j[0] === color1 && j[2] === "king"
+           if j[0] === color1 && j[2] === "king" 
               kingPos = j[3]
            end
          end
+      end
+      
+      if piece != nil && piece[3] != kingPos && piece[2] === "king"
+        kingPos = piece[3]
       end
 
       array.each do |i|
          i.each do |j|
            
              if j[0] === color2 && j[0] != [0]
-              if possible(j, array[kingPos[0]][kingPos[1]] , j[3][0], j[3][1],kingPos[0], kingPos[1], array)
+              if possible(j, array[kingPos[0]][kingPos[1]] , j[3][0], j[3][1],kingPos[0], kingPos[1], array, true)
                 bool = true
               end
              end 
@@ -294,19 +311,21 @@ class ChessController < ApplicationController
       
       array = array.each_with_index.map do |i, x|
         i.each_with_index.map  do |j, y|
-           if x === a && y === b
-             array[x][y] = [0]
-           elsif x === c && y === d
-             array[x][y] = ChessHelper::updatePiece(piece,[x,y])
-           else 
+          if x === a && y ===b
+             j = [0]
+          elsif x === c && y ===d
+             j = ChessHelper::updatePiece(piece,[c,d])
+             piece = j
+          else
              j = @@arr[x][y]
-           end
-
+          end
         end
       end
       
-      bool = !check?(c1, c2, array)
-      puts "#{a} #{b} #{c} #{d}"
+      
+
+      bool = !check?(c1, c2, array, piece)
+      #puts "#{a} #{b} #{c} #{d}"
       bool
     end
 
@@ -318,7 +337,7 @@ class ChessController < ApplicationController
             if j[0] === color1 && j[0] != [0]
 
                j.last.each do |x| 
-                if possible(j, array[x[0]][x[1]], j[3][0], j[3][1], x[0], x[1], array) && preCheck(j[3][0], j[3][1], x[0], x[1], j, color1, color2) 
+                if possible(j, array[x[0]][x[1]], j[3][0], j[3][1], x[0], x[1], array, true) && preCheck(j[3][0], j[3][1], x[0], x[1], j, color1, color2) 
                   possibleMoves.push([j[0], j[2], x]) 
                 end
               end 
@@ -332,6 +351,60 @@ class ChessController < ApplicationController
        end
 
        bool
+
+    end
+
+    def cpumove(color1, color2, arr)
+    #puts all possible, valid computer moves 
+       possibleMoves =[]
+       
+       array = Array.new(8){Array.new(8)}
+      
+       array = array.each_with_index.map do |i, x|
+        i.each_with_index.map  do |j, y|
+            j = @@arr[x][y]
+        end
+      end
+
+        array.each do |i|
+          i.each do |j|
+            if j[0] === color1 && j[0] != [0]
+              j.last.each do |x| 
+                if possible(j, array[x[0]][x[1]], j[3][0], j[3][1], x[0], x[1], array, false) && preCheck(j[3][0], j[3][1], x[0], x[1], j, color1, color2) 
+                  possibleMoves.push([j[0], j[2], j[3], x]) 
+                end
+              end 
+            end
+          end
+        end
+       #puts "possible moves: #{array}"
+       #random possible move
+       index = rand(0...possibleMoves.size)
+
+       curpos = possibleMoves[index][2]
+       newpos = possibleMoves[index][3]
+
+       a = curpos[0]
+       b = curpos[1]
+       c = newpos[0]
+       d = newpos[1] 
+
+       pieceVal = @@arr[a][b]
+
+       @@arr = @@arr.each_with_index.map do | e1, i1|
+        @@arr[i1].each_with_index.map do |e2, i2|
+           if (i1 === a && i2 ===b)
+             @@arr[a][b]  = [0]
+           elsif (i1 === c && i2 === d)
+            @@arr[c][d] = ChessHelper::updatePiece(pieceVal,[c,d])
+           else
+            e2 = @@arr[i1][i2] 
+           end
+        end
+      end
+
+
+     
 
     end
 
