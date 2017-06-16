@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
- get '/:cookies/and/:cream' => 'application#test'
+  get '/win' =>'endstate#win'
+
+  get '/lose' => 'endstate#lose'
+
+  get '/:cookies/and/:cream' => 'application#test'
 
   root 'chess#new'
   post '/chess/:pos' => 'chess#select' 

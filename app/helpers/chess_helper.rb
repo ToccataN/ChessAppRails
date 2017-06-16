@@ -398,4 +398,9 @@ def self.updatePiece(arr , n)
   l = Piece.new(arr[0], arr[1], arr[4], n)
   l.parse
 end
+
+def self.pawnFun(arr, cur)
+  l = Piece.new(arr[0], 'q', arr[4], cur)
+  l.parse
+ end
 end

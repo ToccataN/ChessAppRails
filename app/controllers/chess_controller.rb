@@ -1,31 +1,31 @@
 class ChessController < ApplicationController
 	include ChessHelper
 	extend ChessHelper
-@@arr
-@@color
-@@cpu
-@@player
-@@game
 
-@@playerCheckmate = false
-@@cpuCheckmate = false
+
+
 
   def new
-  	
+  	# board setup
   	@game = Game.new("white", "ARSEFACE!!!")
     @@game = @game
     @arr = @game.board
     @@arr = @arr
+    #player info
     @cpu = @game.cpuName
     @player = @game.playerName
     @@playercolor = @game.playerColor
     @@cpucolor = @game.cpuColor
     @@cpu = @cpu
     @@player = @player
+    #globalized check variables
     @@playerCheck = @game.playerCheck
     @@cpuCheck = @game.cpuCheck
-    
+    @@playerCheckmate = false
+    @@cpuCheckmate = false
+    #counter
     @@counter = 1
+    @counter= @@counter
 
   end
 
@@ -71,7 +71,11 @@ class ChessController < ApplicationController
            if (i1 === a && i2 ===b)
            	 @@arr[a][b]  = [0]
            elsif (i1 === c && i2 === d)
-            @@arr[c][d] = ChessHelper::updatePiece(pieceVal,[c,d])
+            if pieceVal[2] != "pawn"
+             @@arr[c][d] = ChessHelper::updatePiece(pieceVal,[c,d])
+             else
+             @@arr[c][d] = pawnChange(pieceVal, [c,d])
+             end
            else
             e2 = @@arr[i1][i2] 
            end
@@ -85,15 +89,31 @@ class ChessController < ApplicationController
       end
 
       @@cpuCheck = check?(@@cpucolor, @@playercolor, array)
-      if @@cpuCheck
-        @@cpuCheckmate = checkMate?(@@cpucolor, @@playercolor, array)
-        puts "Checkmate? #{@@cpuCheckmate}"
-      end
-      cpumove(@@cpucolor, @@playercolor, @@arr)
+       if @@cpuCheck
+         @@cpuCheckmate = checkMate?(@@cpucolor, @@playercolor, array)
+         puts "Checkmate? #{@@cpuCheckmate}"
+       end
+       if @@cpuCheckmate 
+         return redirect_to win_path
+       else
+          cpumove(@@cpucolor, @@playercolor, @@arr)
+       end
+      
         
+       @@playerCheck = check?(@@playercolor, @@cpucolor, array)
+       if @@playerCheck
+        @@playerCheckmate = checkMate?( @@playercolor, @@cpucolor, array)
+        puts "Checkmate? #{@@playerCheckmate}"
+       
+       end
+       if @@playerCheckmate
+         return  redirect_to lose_path
+       else
+         redirect_to update_path 
+       end
       @@counter += 1
 
-      redirect_to update_path 
+      
 
       end
       
@@ -107,6 +127,7 @@ class ChessController < ApplicationController
       @arr =  @@arr
       @cpu = @@cpu
       @player = @@player
+      @counter = @@counter
     end
     
     def possible(p, s, a, b, c, d, arr, checking)
@@ -396,7 +417,11 @@ class ChessController < ApplicationController
            if (i1 === a && i2 ===b)
              @@arr[a][b]  = [0]
            elsif (i1 === c && i2 === d)
-            @@arr[c][d] = ChessHelper::updatePiece(pieceVal,[c,d])
+           if pieceVal[2] != "pawn"
+             @@arr[c][d] = ChessHelper::updatePiece(pieceVal,[c,d])
+             else
+             @@arr[c][d] = pawnChange(pieceVal, [c,d])
+             end
            else
             e2 = @@arr[i1][i2] 
            end
@@ -408,6 +433,15 @@ class ChessController < ApplicationController
 
     end
 
+    def pawnChange(piece, n)
+       if piece[4] === 1 && n[0] === 7
+        ChessHelper::pawnFun(piece, n)
+       elsif piece[4]===6 && n[0] ===0
+        ChessHelper::pawnFun(piece, n)
+       else 
+        ChessHelper::updatePiece(piece,n)
+       end
+    end
 end
 
 

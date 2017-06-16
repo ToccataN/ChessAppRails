@@ -10,9 +10,14 @@
   </head>
 
   <body>
+    <div class="header">
+      <%= render 'layouts/header' %>
+    </div>
+    <div class= "main ">
   	<% content_for(:body_attributes) do %>
        data-no-turbolink="true"
     <% end %>
     <%= yield %>
+  </div>
   </body>
 </html>

@@ -2,25 +2,67 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-$length: 600px;
-$sq: $length/8 -1;
+$length: 420px;
+
+$mainBorder: 4px solid #999999;
+
+body {
+	padding: 0;
+}
+
 
 @mixin square($length){
-	width: 71px ; 
-	height: 71px;
-	
+	width: 48px ; 
+	height: 48px;	
 	padding: 0%;
-	
 	border: 1px black solid;
 	padding-right: -5px;
 	margin-right: -3px;
-	color: #13aa25;
+	color: #234535;
 	font-size: 10pt;
 	font-weight: bold;
 }
 
+.main {
+	display: flex;
+	flex-flow: row-inline;
+	margin-top: -1%;
+	
+}
+
+.header {
+   display: inline;	
+   padding: 10%;
+   
+}
+
+.header h1 {
+    margin-top: -1%;
+    margin-bottom: 0;
+    padding-top: 3%;
+    padding-bottom: 3%;
+    padding-left: 2%;
+    border: $mainBorder;
+	background-color: black;
+    color: #aaaaaa;
+}
+
+.cpuname{
+	margin: 0 auto;
+    position: relative;
+    text-align: left;
+}
+
+.playername {
+	margin: 0 auto;
+	position: relative;
+    text-align: left;
+}
+
 #backboard {
     margin: 0 auto;
+    margin-left: 1%;
+    margin-right: 1%;
 	width: $length;
 	height: $length;
 	background-color: black;
@@ -29,6 +71,8 @@ $sq: $length/8 -1;
 	justify-content: space-around;
 	flex: none;
 	display: inline-flex;
+	border: $mainBorder;
+
 }
 
 .squarer {
@@ -37,19 +81,18 @@ $sq: $length/8 -1;
  }
 .squareb {
 	@include square($length);
-    background-color: #1a1b99;
+    background-color: #252525;
  }
 
 .name {
-	font-size: 18pt;
+	font-size: 14pt;
 	font-weight: bold;
-	font-family: caslon;
 	color: #dd1133;
 }
 
  img {
-    width : 50px;
-    height: 50px;
+    width : 35px;
+    height: 35px;
     padding: 0px;
     margin: 0px;
  }
@@ -58,7 +101,41 @@ $sq: $length/8 -1;
 	border: 2px green solid;
 }
 
-div {
-	display: inline-flex;
+.array {
+	float: left;
 }
+
+.col-md-4 {
+	width: 10%;
+	height: 5%;
+	margin: 17% 2% 17% 2%;
+	padding-top: 1%;
+}
+.row{
+	background-color: black;
+    border: $mainBorder;
+
+}
+
+.col-md-4 h3 {
+	width: 100%;
+	color: #cdcdcd;
+}
+
+.turns {
+	width: 20%;
+	height: 50%;
+	margin-right: 2%;
+	color: #aaaaaa;
+}
+
+.turns  h4 {
+   color: #dd1133;
+   font-size: 24pt;	
+   font-weight: bold;
+   text-align: right;
+}
+
+
+
 

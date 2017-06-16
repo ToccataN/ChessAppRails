@@ -1,5 +1,5 @@
 
-$(document).ready(function(){
+$(document).on('turbolinks:load', function(){
     $("#backboard div").removeClass("selected");
     var count = 0;
     var sp;
@@ -29,7 +29,6 @@ $(document).ready(function(){
              url: "http://localhost:3000/chess/" + sv + "/" + val,
              success: function(d){
                 count = 0;
-                window.location.reload();
              }
               
            });
