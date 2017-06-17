@@ -15,9 +15,9 @@ module ChessHelper
 		  	@color = color
 		  	@player = Player.new(@color, @name)
 		  	if color == "black"
-		     @cpu = Cpu.new("white", "MOTHERFUCKER!!!!")
+		     @cpu = Cpu.new("white", "The Black Knight!!!!")
 		    elsif color == "white"
-		     @cpu = Cpu.new("black", "MOTHERFUCKER!!!!")
+		     @cpu = Cpu.new("black", "The Black Knight!!!!")
 		    else
 		    	return "try another color, white or black"
 		    end

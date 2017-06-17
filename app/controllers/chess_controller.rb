@@ -2,12 +2,15 @@ class ChessController < ApplicationController
 	include ChessHelper
 	extend ChessHelper
 
+  def pre
 
+  end
 
 
   def new
   	# board setup
-  	@game = Game.new("white", "ARSEFACE!!!")
+    name = params[:name]
+  	@game = Game.new("white", name )
     @@game = @game
     @arr = @game.board
     @@arr = @arr
@@ -57,13 +60,7 @@ class ChessController < ApplicationController
       pieceVal = @@arr[a][b]
       squareVal = @@arr[c][d]
 
-      array = Array.new(8){Array.new(8)}
-      
-      array = array.each_with_index.map do |i, x|
-        i.each_with_index.map  do |j, y|
-             j = @@arr[x][y]
-        end
-      end
+      array = copy
       
       if possible(pieceVal, squareVal, a, b, c, d, array, false)  && preCheck(a, b, c, d, pieceVal, @@playercolor, @@cpucolor)
       @@arr = @@arr.each_with_index.map do | e1, i1|
@@ -378,14 +375,10 @@ class ChessController < ApplicationController
     def cpumove(color1, color2, arr)
     #puts all possible, valid computer moves 
        possibleMoves =[]
-       
-       array = Array.new(8){Array.new(8)}
-      
-       array = array.each_with_index.map do |i, x|
-        i.each_with_index.map  do |j, y|
-            j = @@arr[x][y]
-        end
-      end
+       attackMoves =[]
+
+
+       array = copy
 
         array.each do |i|
           i.each do |j|
@@ -398,12 +391,39 @@ class ChessController < ApplicationController
             end
           end
         end
-       #puts "possible moves: #{array}"
-       #random possible move
-       index = rand(0...possibleMoves.size)
 
-       curpos = possibleMoves[index][2]
-       newpos = possibleMoves[index][3]
+       priThreat = attThreat?(3, color2, possibleMoves)
+
+       nonThreat = possibleMoves - priThreat
+        
+       attackMoves = canAttack?(color2, possibleMoves)
+      
+       threats = attThreat?(3, color2, attackMoves)
+
+       newattackMoves = attackMoves - threats
+
+       puts "possible moves: #{nonThreat}"
+       #random possible move
+       if !newattackMoves.empty?
+          index = rand(0...newattackMoves.size)
+          curpos = newattackMoves[index][2]
+          newpos = newattackMoves[index][3]
+       elsif   !attackMoves.empty?
+          index = rand(0...attackMoves.size)
+          curpos = attackMoves[index][2]
+          newpos = attackMoves[index][3]
+       elsif !nonThreat.empty?
+          index = rand(0...nonThreat.size)
+          curpos = nonThreat[index][2]
+          newpos = nonThreat[index][3]
+       else
+         index = rand(0...possibleMoves.size)
+         curpos = possibleMoves[index][2]
+         newpos = possibleMoves[index][3]
+       end
+
+
+       
 
        a = curpos[0]
        b = curpos[1]
@@ -442,6 +462,59 @@ class ChessController < ApplicationController
         ChessHelper::updatePiece(piece,n)
        end
     end
+
+    def canAttack?(color1, arr)
+       newArr=[]
+       arr.each do |i|
+         j = i.last
+           enemyPiece = @@arr[j[0]][j[1]]
+           if enemyPiece[0] === color1
+             newArr.push(i)
+           end
+       end
+       newArr
+    end
+
+    def attThreat?(n, color1, arr)
+         threats =[]
+         arr.each do |i|
+           j = i[n]
+           if filter(i, j, color1)
+              threats.push(i)
+           end
+         end
+         puts "#{threats}"
+         threats
+
+    end
+
+    def filter(col, j, c)
+          
+          array = copy
+
+           array.each_with_index do |i, x|
+              i.each_with_index do |b, y|
+                 if b[0] ==  c && b[0] != [0] 
+                   b.last.each {|sq|  (sq === j && possible(b, col, sq[0], sq[1], j[0], j[1], array, true)) ? true : false }
+                 end
+              end
+              
+           end
+
+    end
+
+    def copy
+      array = Array.new(8){Array.new(8)}
+      
+       array = array.each_with_index.map do |i, x|
+        i.each_with_index.map  do |j, y|
+            j = @@arr[x][y]
+        end
+      end
+
+      array
+    end
+
 end
 
 

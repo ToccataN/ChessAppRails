@@ -4,8 +4,8 @@ Rails.application.routes.draw do
   get '/lose' => 'endstate#lose'
 
   get '/:cookies/and/:cream' => 'application#test'
-
-  root 'chess#new'
+  post '/chess/' => 'chess#new'
+  root 'chess#pre'
   post '/chess/:pos' => 'chess#select' 
   post '/chess/:piece/:square' => 'chess#move'
   get '/update', to: 'chess#update'
