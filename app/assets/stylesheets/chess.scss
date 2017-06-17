@@ -17,6 +17,8 @@ $length: 420px;
 $mainBorder: 4px solid #999999;
 
 body {
+    min-width: 100%;
+    min-height: 100%;
 	padding: 0;
 	@include back("zwartevilt.png"); 
 }
@@ -282,7 +284,9 @@ h1 a:hover {
 
 
 @media only screen and (max-width: 768px) {
-    
+   
+
+
   $length: 210px;
 
   @mixin square($length){
