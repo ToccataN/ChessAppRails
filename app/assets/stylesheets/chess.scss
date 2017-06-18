@@ -16,9 +16,13 @@ $length: 420px;
 
 $mainBorder: 4px solid #999999;
 
-body {
-    min-width: 100%;
+html {
+	min-width: 100%;
     min-height: 100%;
+}
+
+body {
+    
 	padding: 0;
 	@include back("zwartevilt.png"); 
 }
