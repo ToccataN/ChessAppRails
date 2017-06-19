@@ -13,7 +13,7 @@ $(document).on('turbolinks:load', function(){
             $("#backboard div").removeClass("selected");
             $.ajax ({
              type: 'POST',
-             url: "https://fierce-plateau-61239.herokuapp.com/chess/"+val,
+             url: "https://chessappdenaux.herokuapp.com/chess/"+val,
              success: function(d){
                 if(d === true){
                   me.addClass("selected");
@@ -26,7 +26,7 @@ $(document).on('turbolinks:load', function(){
         } else {
            $.ajax ({
              type: 'POST',
-             url: "https://fierce-plateau-61239.herokuapp.com/chess/" + sv + "/" + val,
+             url: "https://chessappdenaux.herokuapp.com/chess/" + sv + "/" + val,
              success: function(d){
                 count = 0;
              }
