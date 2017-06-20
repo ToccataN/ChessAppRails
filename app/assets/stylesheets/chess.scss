@@ -111,14 +111,14 @@ h4 {
  }
 
  .squarer:hover {
-   border: 1px solid #113388;
+   border: 1px solid #1133aa;
  }
 .squareb {
 	@include square($length);
     background-color: #252525;
  }
 .squareb:hover {
-   border: 1px solid #113388;
+   border: 1px solid #1133aa;
  }
 
 .name {
