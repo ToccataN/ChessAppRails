@@ -109,9 +109,16 @@ h4 {
 	@include square($length);
     background-color: red;
  }
+
+ .squarer:hover {
+   border: 1px solid #113388;
+ }
 .squareb {
 	@include square($length);
     background-color: #252525;
+ }
+.squareb:hover {
+   border: 1px solid #113388;
  }
 
 .name {
@@ -130,7 +137,6 @@ h4 {
 .selected {
 	border: 2px green solid;
 }
-
 
 .col-md-4 {
 	width: 10%;
@@ -208,8 +214,8 @@ h4 {
     margin-top: 2%;
     border: $mainBorder;
     @include back("winstate.jpg");
-	display: flex;
-	flex-flow: column;
+	  display: flex;
+	  flex-flow: column;
     justify-content: center ;
     align-items: center;
     font-size: 28pt;
@@ -240,7 +246,6 @@ h4 {
 .button {
 	width: 25%;
 	height: 15%;
-
 	background-color: #989898;
 	border: 1px solid #323232;
 	border-radius: 8%;
@@ -268,8 +273,8 @@ h3 a:hover {
 
 .end h1 {
 	 font-size: 38pt;
-     font-weight: bold;
-     color: #c51121;
+   font-weight: bold;
+   color: #c51121;
 }
 
 .header a {
