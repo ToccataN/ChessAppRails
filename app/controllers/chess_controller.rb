@@ -6,7 +6,6 @@ class ChessController < ApplicationController
 
   end
 
-
   def new
   	# board setup
     name = params[:name]
@@ -69,7 +68,6 @@ class ChessController < ApplicationController
       
       if possible(pieceVal, squareVal, a, b, c, d, array, false)  && preCheck(a, b, c, d, pieceVal, @@playercolor, @@cpucolor)
         @@arr = pieceMove(a,b,c,d,array,pieceVal)
-      
 
       array = copy
 
@@ -216,11 +214,11 @@ class ChessController < ApplicationController
       bool = true
       
       if st === 1 
-        if arr[pl[0]+1][pl[1]+1] != nil 
+        if arr[pl[0]+1][pl[1]+1] != [0] && pl[1]+1 < 8
           att1 = arr[pl[0]+1][pl[1]+1]
           (att1[0] != player[0] && att1 != [0] && !move.include?([pl[0]+1, pl[1]+1]) ) ?  move.push([pl[0]+1, pl[1]+1]) : 0
         end
-        if arr[pl[0]+1][pl[1]-1] != nil
+        if arr[pl[0]+1][pl[1]-1] != [0] && pl[1]-1 > -1
           att2 = arr[pl[0]+1][pl[1]-1]
           (att2[0] != player[0] && att2 != [0] && !move.include?([pl[0]+1, pl[1]-1])) ?  move.push([pl[0]+1, pl[1]-1]) : 0
         end
@@ -234,7 +232,7 @@ class ChessController < ApplicationController
            (att4[0] != player[0] && att4 != [0] && !move.include?([pl[0]-1, pl[1]-1]) )  ?  move.push([pl[0]-1, pl[1]-1]) : 0
          end
       end
-
+      puts "#{move}"
       if sq[1] === pl[1] && sq[0] > pl[0] 
         (pl[0]...sq[0]).to_a.each {|x| array.push(x)}
       elsif sq[1] === pl[1] && sq[0] < pl[0] 
@@ -254,6 +252,8 @@ class ChessController < ApplicationController
           move.delete(x) 
         end
       end
+
+
       bool = move.include?(sq)
 
       bool
@@ -277,16 +277,13 @@ class ChessController < ApplicationController
 
       arr.each do |i|
          i.each do |j|
-           
              if j[0] === color2 && j[0] != [0]
               if possible(j, arr[kingPos[0]][kingPos[1]] , j[3][0], j[3][1],kingPos[0], kingPos[1], arr, true)
                 bool = true
               end
-             end 
-            
+             end      
          end
       end
-      puts "#{color1} in check: #{bool}, #{kingPos}"
       bool
     end 
     

@@ -16,7 +16,7 @@
 /tmp/*
 !/log/.keep
 !/tmp/.keep
-
+/app/assets/javascript/chess.js
 /node_modules
 /yarn-error.log
 
