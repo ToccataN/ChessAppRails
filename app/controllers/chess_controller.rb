@@ -10,7 +10,8 @@ class ChessController < ApplicationController
   def new
   	# board setup
     name = params[:name]
-  	@game = Game.new("white", name )
+    color = params[:color]
+  	@game = Game.new(color, name )
     @@game = @game
     @arr = @game.board
     @@arr = @arr
@@ -29,6 +30,10 @@ class ChessController < ApplicationController
     #counter
     @@counter = 1
     @counter= @@counter
+
+    if @@playercolor == "black"
+      cpumove(@@cpucolor, @@playercolor, @@arr)
+    end
 
   end
 
@@ -63,27 +68,10 @@ class ChessController < ApplicationController
       array = copy
       
       if possible(pieceVal, squareVal, a, b, c, d, array, false)  && preCheck(a, b, c, d, pieceVal, @@playercolor, @@cpucolor)
-      @@arr = @@arr.each_with_index.map do | e1, i1|
-        @@arr[i1].each_with_index.map do |e2, i2|
-           if (i1 === a && i2 ===b)
-           	 @@arr[a][b]  = [0]
-           elsif (i1 === c && i2 === d)
-            if pieceVal[2] != "pawn"
-             @@arr[c][d] = ChessHelper::updatePiece(pieceVal,[c,d])
-             else
-             @@arr[c][d] = pawnChange(pieceVal, [c,d])
-             end
-           else
-            e2 = @@arr[i1][i2] 
-           end
-        end
-      end
+        @@arr = pieceMove(a,b,c,d,array,pieceVal)
+      
 
-     array = array.each_with_index.map do |i, x|
-        i.each_with_index.map  do |j, y|
-             j = @@arr[x][y]
-        end
-      end
+      array = copy
 
       @@cpuCheck = check?(@@cpucolor, @@playercolor, array)
        if @@cpuCheck
@@ -110,13 +98,7 @@ class ChessController < ApplicationController
        end
       @@counter += 1
 
-      
-
       end
-      
-      
-    
-
 
     end
     
@@ -133,13 +115,10 @@ class ChessController < ApplicationController
      bool = false
      piece = arr[a][b]
 
-
      if indS != indP
      
        if ((p[0] != s[0] || s[0] === 0)) && (checkBetween(p.last, indS, indP, arr, p, checking)) 
        	 bool = p.last.any? {|x| x === [c,d]}
-       else
-       
        end
   
      end
@@ -153,9 +132,6 @@ class ChessController < ApplicationController
       diag2 = []
       bool = true
       
-     
-
-
       a = boardArr[indP[0]][indP[1]]
       piece = a[2]
       start = a[4]
@@ -287,17 +263,7 @@ class ChessController < ApplicationController
       bool = false
       kingPos = [0,0] 
 
-
-
-      array = Array.new(8){Array.new(8)}
-      
-      array = array.each_with_index.map do |i, x|
-        i.each_with_index.map  do |j, y|
-            j = arr[x][y]
-        end
-      end
-
-      array.each do |i|
+      arr.each do |i|
          i.each do |j|
            if j[0] === color1 && j[2] === "king" 
               kingPos = j[3]
@@ -309,11 +275,11 @@ class ChessController < ApplicationController
         kingPos = piece[3]
       end
 
-      array.each do |i|
+      arr.each do |i|
          i.each do |j|
            
              if j[0] === color2 && j[0] != [0]
-              if possible(j, array[kingPos[0]][kingPos[1]] , j[3][0], j[3][1],kingPos[0], kingPos[1], array, true)
+              if possible(j, arr[kingPos[0]][kingPos[1]] , j[3][0], j[3][1],kingPos[0], kingPos[1], arr, true)
                 bool = true
               end
              end 
@@ -339,8 +305,6 @@ class ChessController < ApplicationController
           end
         end
       end
-      
-      
 
       bool = !check?(c1, c2, array, piece)
       #puts "#{a} #{b} #{c} #{d}"
@@ -353,7 +317,6 @@ class ChessController < ApplicationController
         array.each do |i|
           i.each do |j|
             if j[0] === color1 && j[0] != [0]
-
                j.last.each do |x| 
                 if possible(j, array[x[0]][x[1]], j[3][0], j[3][1], x[0], x[1], array, true) && preCheck(j[3][0], j[3][1], x[0], x[1], j, color1, color2) 
                   possibleMoves.push([j[0], j[2], x]) 
@@ -376,7 +339,6 @@ class ChessController < ApplicationController
     #puts all possible, valid computer moves 
        possibleMoves =[]
        attackMoves =[]
-
 
        array = copy
 
@@ -422,9 +384,6 @@ class ChessController < ApplicationController
          newpos = possibleMoves[index][3]
        end
 
-
-       
-
        a = curpos[0]
        b = curpos[1]
        c = newpos[0]
@@ -432,24 +391,7 @@ class ChessController < ApplicationController
 
        pieceVal = @@arr[a][b]
 
-       @@arr = @@arr.each_with_index.map do | e1, i1|
-        @@arr[i1].each_with_index.map do |e2, i2|
-           if (i1 === a && i2 ===b)
-             @@arr[a][b]  = [0]
-           elsif (i1 === c && i2 === d)
-           if pieceVal[2] != "pawn"
-             @@arr[c][d] = ChessHelper::updatePiece(pieceVal,[c,d])
-             else
-             @@arr[c][d] = pawnChange(pieceVal, [c,d])
-             end
-           else
-            e2 = @@arr[i1][i2] 
-           end
-        end
-      end
-
-
-     
+       @@arr = pieceMove(a,b,c,d,array,pieceVal)
 
     end
 
@@ -513,6 +455,41 @@ class ChessController < ApplicationController
       end
 
       array
+    end
+
+    def pieceMove(a,b,c,d,array,piece)
+       array = array.each_with_index.map do | e1, i1|
+         e1.each_with_index.map do |e2, i2|
+           if (i1 === a && i2 ===b)
+              e2 = [0]
+           elsif (i1 === c && i2 === d)
+              if piece[2] != "pawn"
+                e2 = ChessHelper::updatePiece(piece,[c,d])
+              else
+                e2 = pawnChange(piece, [c,d])
+             end
+           else
+             e2 = array[i1][i2] 
+           end
+        end
+      end
+      array
+    end
+
+    def posMoves(array)
+      possibleMoves =[]
+        array.each do |i|
+          i.each do |j|
+            if j[0] === color1 && j[0] != [0]
+               j.last.each do |x| 
+                if possible(j, array[x[0]][x[1]], j[3][0], j[3][1], x[0], x[1], array, true) && preCheck(j[3][0], j[3][1], x[0], x[1], j, color1, color2) 
+                  possibleMoves.push([j[0], j[2], x]) 
+                end
+              end 
+            end
+          end
+        end
+        possibleMoves
     end
 
 end

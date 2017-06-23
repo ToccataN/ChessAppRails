@@ -9,6 +9,14 @@
    <%= text_field_tag :name, nil, placeholder: "Challenger Name"%>
   </div>
   <div class ="form-group">
+   
+    <%= radio_button_tag(:color, "white", checked: true) %>
+    <%= label_tag(:color_me, "White") %>
+    <%= radio_button_tag(:color, "black") %>
+    <%= label_tag(:color_me, "Black") %>
+
+  </div>
+  <div class ="form-group">
     <%= submit_tag("None Shall Pass!", {class: "pre-button"}) %>
 </end>
 <% end %>
