@@ -14,7 +14,6 @@ class ChessController < ApplicationController
   	@game = Game.new(color, name )
     @@game = @game
     @arr = @game.board
-    @@arr = @arr
     #player info
     @cpu = @game.cpuName
     @player = @game.playerName
@@ -30,10 +29,11 @@ class ChessController < ApplicationController
     #counter
     @@counter = 1
     @counter= @@counter
-
-    if @@playercolor == "black"
+    @@arr = @arr
+    if color == "black"
       cpumove(@@cpucolor, @@playercolor, @@arr)
     end
+    @arr = @@arr
 
   end
 
