@@ -298,7 +298,7 @@ h3 a:hover {
 }
 
 
-@media only screen and (max-width: 768px) and (orientation: landscape){
+@media only screen and (max-width: 768px){
    
 
 
@@ -375,13 +375,9 @@ h3 a:hover {
 
 
 @media only screen and (orientation: portriat){
-  .main{
-    display: flex;
-    flex-flow: column-reverse nowrap;
-  }
-  turns {
-    width: 100%;
-  }
+   -ms-transform: rotate(90deg); /* IE 9 */
+    -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
+    transform: rotate(90deg);
 }
 
 
