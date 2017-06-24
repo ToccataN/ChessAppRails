@@ -34,6 +34,16 @@ class ChessController < ApplicationController
     end
     @arr = @@arr
 
+    @@castleFigures = {}
+    @arr.each do |i|
+      i.each do |j|
+        if j[2] == "rook" || j[2] =="king"
+          str = j[0] + "" + j[2] + "" + j[4].to_s
+          @@castleFigures[str] = false                    
+        end
+      end
+    end
+    @@castleFigures.each {|x|  puts "#{x}"}
   end
 
  def select
@@ -68,6 +78,7 @@ class ChessController < ApplicationController
       
       if possible(pieceVal, squareVal, a, b, c, d, array, false)  && preCheck(a, b, c, d, pieceVal, @@playercolor, @@cpucolor)
         @@arr = pieceMove(a,b,c,d,array,pieceVal)
+        castleFilter(pieceVal)
 
       array = copy
 
@@ -75,12 +86,20 @@ class ChessController < ApplicationController
        if @@cpuCheck
          @@cpuCheckmate = checkMate?(@@cpucolor, @@playercolor, array)
          puts "Checkmate? #{@@cpuCheckmate}"
+         if @@cpuCheckmate 
+           return redirect_to win_path
+         else
+           cpumove(@@cpucolor, @@playercolor, @@arr)
+         end
+       elsif !@@cpuCheck
+         @@cpuCheckmate = checkMate?(@@cpucolor, @@playercolor, array)
+         if @@cpuCheckmate 
+           return redirect_to lose_path
+         else
+           cpumove(@@cpucolor, @@playercolor, @@arr)
+         end
        end
-       if @@cpuCheckmate 
-         return redirect_to win_path
-       else
-          cpumove(@@cpucolor, @@playercolor, @@arr)
-       end
+       
       
         
        @@playerCheck = check?(@@playercolor, @@cpucolor, array)
@@ -210,29 +229,30 @@ class ChessController < ApplicationController
     
     def pawnLogic(moves, sq, pl, st, arr, player, checking)
       array =[]
-      move = moves
+      move = []
       bool = true
       
+      moves.each {|x| move.push(x)}
       if st === 1 
         if arr[pl[0]+1][pl[1]+1] != [0] && pl[1]+1 < 8
           att1 = arr[pl[0]+1][pl[1]+1]
-          (att1[0] != player[0] && att1 != [0] && !move.include?([pl[0]+1, pl[1]+1]) ) ?  move.push([pl[0]+1, pl[1]+1]) : 0
+          (att1[0] != player[0] && att1[0] != [0] && !move.include?([pl[0]+1, pl[1]+1]) ) ?  move.push([pl[0]+1, pl[1]+1]) : 0
         end
         if arr[pl[0]+1][pl[1]-1] != [0] && pl[1]-1 > -1
           att2 = arr[pl[0]+1][pl[1]-1]
-          (att2[0] != player[0] && att2 != [0] && !move.include?([pl[0]+1, pl[1]-1])) ?  move.push([pl[0]+1, pl[1]-1]) : 0
+          (att2[0] != player[0] && att2[0] != [0] && !move.include?([pl[0]+1, pl[1]-1])) ?  move.push([pl[0]+1, pl[1]-1]) : 0
         end
       elsif st === 6
          if arr[pl[0]-1][pl[1]+1] != [0] && pl[1]+1 < 8
            att3 = arr[pl[0]-1][pl[1]+1]
-           (att3[0] != player[0] && att3 != [0] && !move.include?([pl[0]-1, pl[1]+1])) ? move.push([pl[0]-1, pl[1]+1]) : 0
+           (att3[0] != player[0] && att3[0] != [0] && !move.include?([pl[0]-1, pl[1]+1])) ? move.push([pl[0]-1, pl[1]+1]) : 0
          end
          if arr[pl[0]-1][pl[1]-1] != [0] && pl[1]-1 > -1
            att4 = arr[pl[0]-1][pl[1]-1]
-           (att4[0] != player[0] && att4 != [0] && !move.include?([pl[0]-1, pl[1]-1]) )  ?  move.push([pl[0]-1, pl[1]-1]) : 0
+           (att4[0] != player[0] && att4[0] != [0] && !move.include?([pl[0]-1, pl[1]-1]) )  ?  move.push([pl[0]-1, pl[1]-1]) : 0
          end
       end
-      puts "#{move}"
+      
       if sq[1] === pl[1] && sq[0] > pl[0] 
         (pl[0]...sq[0]).to_a.each {|x| array.push(x)}
       elsif sq[1] === pl[1] && sq[0] < pl[0] 
@@ -252,11 +272,16 @@ class ChessController < ApplicationController
           move.delete(x) 
         end
       end
-
-
+      
       bool = move.include?(sq)
-
+      
+      
+        moves.replace(move)
+        #puts "my pos: #{moves}"
+      
+      
       bool
+  
     end
      
     def check?(color1, color2, arr, piece = nil) 
@@ -387,6 +412,8 @@ class ChessController < ApplicationController
        d = newpos[1] 
 
        pieceVal = @@arr[a][b]
+       
+       castleFilter(pieceVal)
 
        @@arr = pieceMove(a,b,c,d,array,pieceVal)
 
@@ -487,6 +514,15 @@ class ChessController < ApplicationController
           end
         end
         possibleMoves
+    end
+
+    def castleFilter(piece)
+       starts = [0 , 7 , [0,7] , [0,0] , [7,0] , [7,7]]
+       if (piece[2] == "rook" || piece[2] =="king") && starts.include?(piece[4])
+         str = piece[0] + "" + piece[2] + "" + piece[4].to_s
+         @@castleFigures[str] = true                    
+         @@castleFigures.each {|x|  puts "#{x}"}
+       end
     end
 
 end

@@ -207,7 +207,7 @@ class Rook
     end
 
   def initialize(start_index, curpos, n)
-    @start_index = start_index
+    @start_index = curpos
     @curpos = curpos
     @name = "rook"
     @n = n 

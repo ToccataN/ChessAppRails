@@ -374,13 +374,6 @@ h3 a:hover {
 }
 
 
-@media all and (orientation: portriat){
-  html {
-   -ms-transform: rotate(90deg); /* IE 9 */
-    -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
-    transform: rotate(90deg);
-  }
-}
 
 
 
