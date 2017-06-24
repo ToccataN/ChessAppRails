@@ -229,10 +229,9 @@ class ChessController < ApplicationController
     
     def pawnLogic(moves, sq, pl, st, arr, player, checking)
       array =[]
-      move = []
+      move = moves
       bool = true
       
-      moves.each {|x| move.push(x)}
       if st === 1 
         if arr[pl[0]+1][pl[1]+1] != [0] && pl[1]+1 < 8
           att1 = arr[pl[0]+1][pl[1]+1]
@@ -276,7 +275,6 @@ class ChessController < ApplicationController
       bool = move.include?(sq)
       
       
-        moves.replace(move)
         #puts "my pos: #{moves}"
       
       
