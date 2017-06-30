@@ -74,13 +74,13 @@ class ChessController < ApplicationController
       pieceVal = @@arr[a][b]
       squareVal = @@arr[c][d]
 
-      array = copy
+      array = copy(@@arr)
       
       if possible(pieceVal, squareVal, a, b, c, d, array, false)  && preCheck(a, b, c, d, pieceVal, @@playercolor, @@cpucolor)
         @@arr = pieceMove(a,b,c,d,array,pieceVal)
         castleFilter(pieceVal)
 
-      array = copy
+      array = copy(@@arr)
 
       @@cpuCheck = check?(@@cpucolor, @@playercolor, array)
        if @@cpuCheck
@@ -131,6 +131,8 @@ class ChessController < ApplicationController
      indP = [a, b]
      bool = false
      piece = arr[a][b]
+     
+     pClone = p.last
 
      if indS != indP
      
@@ -228,55 +230,38 @@ class ChessController < ApplicationController
     end
     
     def pawnLogic(moves, sq, pl, st, arr, player, checking)
-      array =[]
+      badMove =[]
       move = moves
       bool = true
-      
-      if st === 1 
-        if arr[pl[0]+1][pl[1]+1] != [0] && pl[1]+1 < 8
-          att1 = arr[pl[0]+1][pl[1]+1]
-          (att1[0] != player[0] && att1[0] != [0] && !move.include?([pl[0]+1, pl[1]+1]) ) ?  move.push([pl[0]+1, pl[1]+1]) : 0
+     
+        move.each do |i|
+          puts "heres each move: #{i}"
+          a = arr[i[0]][i[1]]
+          
+          if a[0] == 0 && pl[1]+1 == i[1]
+            badMove.push(i)
+          end
+          if a[0] == player[0] &&  pl[1]+1 == i[1]
+            badMove.push(i)
+          end
+          if a[0] == 0 && pl[1]-1 == i[1]
+            badMove.push(i)
+          end
+          if a[0] == player[0] && pl[1]-1 == i[1]
+            badMove.push(i)
+          end
+          if  (pl[1] === i[1] && a != [0]) || (pl[1] === i[1] && a != [0])
+              badMove.push(i)
+          end
+          if pl[0]+2 == i[0]  && arr[pl[0]+1][pl[1]] != [0] 
+              badMove.push(i)
+          end
+          if pl[0]-2 == i[0] && arr[pl[0]-1][pl[1]] != [0]
+             badMove.push(i)
+          end
         end
-        if arr[pl[0]+1][pl[1]-1] != [0] && pl[1]-1 > -1
-          att2 = arr[pl[0]+1][pl[1]-1]
-          (att2[0] != player[0] && att2[0] != [0] && !move.include?([pl[0]+1, pl[1]-1])) ?  move.push([pl[0]+1, pl[1]-1]) : 0
-        end
-      elsif st === 6
-         if arr[pl[0]-1][pl[1]+1] != [0] && pl[1]+1 < 8
-           att3 = arr[pl[0]-1][pl[1]+1]
-           (att3[0] != player[0] && att3[0] != [0] && !move.include?([pl[0]-1, pl[1]+1])) ? move.push([pl[0]-1, pl[1]+1]) : 0
-         end
-         if arr[pl[0]-1][pl[1]-1] != [0] && pl[1]-1 > -1
-           att4 = arr[pl[0]-1][pl[1]-1]
-           (att4[0] != player[0] && att4[0] != [0] && !move.include?([pl[0]-1, pl[1]-1]) )  ?  move.push([pl[0]-1, pl[1]-1]) : 0
-         end
-      end
       
-      if sq[1] === pl[1] && sq[0] > pl[0] 
-        (pl[0]...sq[0]).to_a.each {|x| array.push(x)}
-      elsif sq[1] === pl[1] && sq[0] < pl[0] 
-        (sq[0]...pl[0]).to_a.reverse.each { |x| array.push(x)}
-      end
-      
-      array = array.map {|x| x = [pl[0], x]}
-      array.shift
-      array.each do |i|
-           if arr[i[0]][i[1]] != [0]
-             bool =false
-           end
-      end
-
-      move.each do |x| 
-        if x[1] === pl[1] && arr[x[0]][x[1]] != [0] && !checking
-          move.delete(x) 
-        end
-      end
-      
-      bool = move.include?(sq)
-      
-      
-        #puts "my pos: #{moves}"
-      
+        bool = !badMove.include?(sq)  
       
       bool
   
@@ -360,7 +345,7 @@ class ChessController < ApplicationController
        possibleMoves =[]
        attackMoves =[]
 
-       array = copy
+       array = copy(@@arr)
 
         array.each do |i|
           i.each do |j|
@@ -384,7 +369,7 @@ class ChessController < ApplicationController
 
        newattackMoves = attackMoves - threats
 
-       puts "possible moves: #{nonThreat}"
+       #puts "possible moves: #{nonThreat}"
        #random possible move
        if !newattackMoves.empty?
           index = rand(0...newattackMoves.size)
@@ -447,14 +432,14 @@ class ChessController < ApplicationController
               threats.push(i)
            end
          end
-         puts "#{threats}"
+         #puts "#{threats}"
          threats
 
     end
 
     def filter(col, j, c)
           
-          array = copy
+          array = copy(@@arr)
 
            array.each_with_index do |i, x|
               i.each_with_index do |b, y|
@@ -467,12 +452,12 @@ class ChessController < ApplicationController
 
     end
 
-    def copy
+    def copy(arr)
       array = Array.new(8){Array.new(8)}
       
        array = array.each_with_index.map do |i, x|
         i.each_with_index.map  do |j, y|
-            j = @@arr[x][y]
+            j = arr[x][y]
         end
       end
 

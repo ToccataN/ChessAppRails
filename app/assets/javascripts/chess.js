@@ -13,7 +13,7 @@ $(document).on('turbolinks:load', function(){
             $("#backboard div").removeClass("selected");
             $.ajax ({
              type: 'POST',
-             url: "https://chessappdenaux.herokuapp.com/chess/"+val,
+             url: "https://chessappdenaux.herokuapp.com"+val,
              success: function(d){
                 if(d === true){
                   me.addClass("selected");
@@ -28,7 +28,7 @@ $(document).on('turbolinks:load', function(){
              type: 'POST',
              //  http://localhost:3000
              // https://chessappdenaux.herokuapp.com
-             url: "https://chessappdenaux.herokuapp.com/chess/" + sv + "/" + val,
+             url: "https://chessappdenaux.herokuapp.com" + sv + "/" + val,
              success: function(d){
                 count = 0;
              }

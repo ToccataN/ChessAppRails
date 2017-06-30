@@ -185,13 +185,27 @@ class Pawn
        else
        	  p = [[@curpos[0]+1, @curpos[1]]] 
        end
+       if @curpos[1] - 1 >= 0
+           p.push([@curpos[0]+1, @curpos[1]-1])
+       end
+       if @curpos[1] + 1 < 8
+           p.push([@curpos[0]+1, @curpos[1]+1])
+       end
+         
     elsif @start_index === 6
        if @curpos[0] === 6
           p = [[@curpos[0]-1, @curpos[1]], [@curpos[0]-2, @curpos[1]]] 
        else
        	  p = [[@curpos[0]-1, @curpos[1]]] 
        end
+       if @curpos[1] - 1 >= 0
+          p.push([@curpos[0]-1, @curpos[1]-1])
+       end
+       if @curpos[1] + 1 < 8
+           p.push([@curpos[0]-1, @curpos[1]+1])
+       end
     end
+    puts "#{p}"
     p
   end
   
@@ -207,7 +221,7 @@ class Rook
     end
 
   def initialize(start_index, curpos, n)
-    @start_index = curpos
+    @start_index = start_index
     @curpos = curpos
     @name = "rook"
     @n = n 
