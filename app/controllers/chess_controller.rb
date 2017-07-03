@@ -100,20 +100,27 @@ class ChessController < ApplicationController
          end
        end
        
-      
+      array = copy(@@arr)
         
        @@playerCheck = check?(@@playercolor, @@cpucolor, array)
        if @@playerCheck
         @@playerCheckmate = checkMate?( @@playercolor, @@cpucolor, array)
         puts "Checkmate? #{@@playerCheckmate}"
-       
+        if @@playerCheckmate
+          return  redirect_to lose_path
+        end
+       elsif !@@playerCheck
+          @@playerCheckmate = checkMate?( @@playercolor, @@cpucolor, array)
+          puts "Checkmate? #{@@playerCheckmate}"
+          if @@playerCheckmate
+            return  redirect_to lose_path
+          end
        end
-       if @@playerCheckmate
-         return  redirect_to lose_path
-       else
-         redirect_to update_path 
-       end
+      
       @@counter += 1
+      redirect_to update_path 
+       
+      
 
       end
 
