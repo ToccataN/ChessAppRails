@@ -1,2 +1,7 @@
 <h1>CHESS  </h1>
 <a href="https://github.com/ToccataN/ChessAppRails">github: https://github.com/ToccataN/ChessAppRails</a>
+ <% if @playerCheck %>
+      <div class ="flasher">
+        <%= render 'layouts/flasher'%>
+      </div>
+ <%end %>

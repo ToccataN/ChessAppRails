@@ -9,10 +9,11 @@
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
-  <body data-no-turbolink="true">
+  <body>
     <div class="header">
       <%= render 'layouts/header' %>
     </div>
+
     <div class= "main ">
   	<% content_for(:body_attributes) do %>
        data-no-turbolink="true"

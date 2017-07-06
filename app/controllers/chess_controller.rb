@@ -86,6 +86,7 @@ class ChessController < ApplicationController
        if @@cpuCheck
          @@cpuCheckmate = checkMate?(@@cpucolor, @@playercolor, array)
          puts "Checkmate? #{@@cpuCheckmate}"
+         checkFlash(@@cpucolor)
          if @@cpuCheckmate 
            return redirect_to win_path
          else
@@ -106,6 +107,7 @@ class ChessController < ApplicationController
        if @@playerCheck
         @@playerCheckmate = checkMate?( @@playercolor, @@cpucolor, array)
         puts "Checkmate? #{@@playerCheckmate}"
+        checkFlash(@@playercolor)
         if @@playerCheckmate
           return  redirect_to lose_path
         end
@@ -131,6 +133,8 @@ class ChessController < ApplicationController
       @cpu = @@cpu
       @player = @@player
       @counter = @@counter
+      @playerCheck = @@playerCheck
+      @cpuCheck = @@cpuCheck
     end
     
     def possible(p, s, a, b, c, d, arr, checking)
@@ -513,6 +517,10 @@ class ChessController < ApplicationController
          @@castleFigures[str] = true                    
          @@castleFigures.each {|x|  puts "#{x}"}
        end
+    end
+
+    def checkFlash(player)
+      flash.alert = "#{player} is in check!!!!"
     end
 
 end
