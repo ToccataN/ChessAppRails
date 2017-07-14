@@ -1,6 +1,4 @@
 <div class ="container">
-
-
 <div class="row">
 <div class = "cpuname col-md-4">
 <h3>Enemy:  </h3>
@@ -21,11 +19,15 @@
 
 </div>
 
-<div class="turns container">
+<div class="turns container" style="overflow-y: scroll; height: 300px">
   <div class="row">
 <div class ="col-md-4 ">
   <h1> Turn: </h1>
   <h4><%= @counter %></h4>
+  <h2> Moves: </h2>
+  <% @moves.to_a.reverse.each do |key, value| %>
+    <h6> <%= key %>:  <%= value %></h6>
+  <% end %>
 </div>
 </div>
 </div>

@@ -4,9 +4,9 @@
 <% @arr.each_with_index do |i, j | %>
   <% @arr[j].each_with_index do |c, s| %>
    <% letter = ('a'..'h').to_a %>
-   <% number = (1..8).to_a.reverse %>
+   <% number = (1..8).to_a %>
    <% pos = [j, s] %>
-   <% int = "#{number[j]}#{letter[s]}" %>
+   <% int = "#{letter[j]}#{number[s]}" %>
    <%  c[0] == 0 || c[1] == "unknown" ? view = int : view = image_tag("#{c[0]}#{c[2]}.png") %>
    <%   %>
    <% if j % 2 === 0 %>

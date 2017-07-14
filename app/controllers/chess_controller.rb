@@ -44,6 +44,9 @@ class ChessController < ApplicationController
       end
     end
     @@castleFigures.each {|x|  puts "#{x}"}
+    @@moves = {}
+    @@cpuMoveInfo = []
+
   end
 
  def select
@@ -118,7 +121,7 @@ class ChessController < ApplicationController
             return  redirect_to lose_path
           end
        end
-      
+      @@moves[@@counter] = pastMove(piece, square, @@cpuMoveInfo)
       @@counter += 1
       redirect_to update_path 
        
@@ -135,6 +138,7 @@ class ChessController < ApplicationController
       @counter = @@counter
       @playerCheck = @@playerCheck
       @cpuCheck = @@cpuCheck
+      @moves = @@moves
     end
     
     def possible(p, s, a, b, c, d, arr, checking)
@@ -408,7 +412,7 @@ class ChessController < ApplicationController
        pieceVal = @@arr[a][b]
        
        castleFilter(pieceVal)
-
+       @@cpuMoveInfo = [a,b,c,d,pieceVal]
        @@arr = pieceMove(a,b,c,d,array,pieceVal)
 
     end
@@ -521,6 +525,16 @@ class ChessController < ApplicationController
 
     def checkFlash(player)
       flash.alert = "#{player} is in check!!!!"
+    end
+
+    def pastMove(p, s, cpu)
+       letter = ('a'..'h').to_a
+       number = (1..8).to_a
+
+       str1 = "#{@@player} #{letter[p[0]]}#{number[p[2]]} --> #{letter[s[0]]}#{number[s[2]]}; "
+       str2 = "#{@@cpu} #{cpu[4][2]}  #{letter[cpu[0]]}#{number[1]} --> #{letter[cpu[2]]}#{number[cpu[3]]}"
+       str = str1 + str2
+       str
     end
 
 end
