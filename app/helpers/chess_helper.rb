@@ -21,7 +21,7 @@ module ChessHelper
 		    else
 		    	return "try another color, white or black"
 		    end
-            @boardPos = [['r','k','b','q','ki','b','k','r'],
+            @boardPosW = [['r','k','b','q','ki','b','k','r'],
                         ['p','p','p','p','p','p','p','p'],
                         [0,0,0,0,0,0,0,0],
                         [0,0,0,0,0,0,0,0],
@@ -29,6 +29,14 @@ module ChessHelper
                         [0,0,0,0,0,0,0,0],
                         ['p','p','p','p','p','p','p','p'],
                         ['r','k','b','q','ki','b','k','r']]
+             @boardPosB = [['r','k','b','ki' ,'q','b','k','r'],
+                        ['p','p','p','p','p','p','p','p'],
+                        [0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0],
+                        ['p','p','p','p','p','p','p','p'],
+                        ['r','k','b','ki','q' ,'b','k','r']]
            
            end
          
@@ -56,7 +64,11 @@ module ChessHelper
              setup
 		   end
            def board
-              boardCol(@cpu.color, @player.color, @boardPos)
+             if @player.color == "white"
+              boardCol(@cpu.color, @player.color, @boardPosW)
+             else
+              boardCol(@cpu.color, @player.color, @boardPosB)
+             end
            end
 
            def playerName
@@ -205,7 +217,6 @@ class Pawn
            p.push([@curpos[0]-1, @curpos[1]+1])
        end
     end
-    puts "#{p}"
     p
   end
   
@@ -399,6 +410,13 @@ class King
         p.push([@curpos[0]+i[0], @curpos[1]+ i[1]])
       end
     end
+    
+    if @curpos[1] === 4
+      p.push([@curpos[0], @curpos[1]+2], [@curpos[0], @curpos[1]-2])
+    elsif @curpos[1] ===3
+      p.push([@curpos[0], @curpos[1]-2], [@curpos[0], @curpos[1]+2])
+    end
+
     p
   end
   

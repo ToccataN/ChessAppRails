@@ -38,12 +38,11 @@ class ChessController < ApplicationController
     @arr.each do |i|
       i.each do |j|
         if j[2] == "rook" || j[2] =="king"
-          str = j[0] + "" + j[2] + "" + j[4].to_s
-          @@castleFigures[str] = false                    
+          str = j[0] + "" + j[2] + "" + j[3][1].to_s
+          @@castleFigures[str] = false                   
         end
       end
     end
-    @@castleFigures.each {|x|  puts "#{x}"}
     @@moves = {}
     @@cpuMoveInfo = []
 
@@ -80,11 +79,15 @@ class ChessController < ApplicationController
       array = copy(@@arr)
       
       if possible(pieceVal, squareVal, a, b, c, d, array, false)  && preCheck(a, b, c, d, pieceVal, @@playercolor, @@cpucolor)
-        @@arr = pieceMove(a,b,c,d,array,pieceVal)
+        if pieceVal[2] === "king" && (b - d > 1 || d - b > 1)
+          @@arr = castleMove(pieceVal, a, b, c, d, array)
+        else
+          @@arr = pieceMove(a,b,c,d,array,pieceVal)
+        end
         castleFilter(pieceVal)
 
       array = copy(@@arr)
-
+  
       @@cpuCheck = check?(@@cpucolor, @@playercolor, array)
        if @@cpuCheck
          @@cpuCheckmate = checkMate?(@@cpucolor, @@playercolor, array)
@@ -213,8 +216,7 @@ class ChessController < ApplicationController
            end
         end
        elsif piece == "knight"
-         bool = true
-      
+         bool = true 
        else
          
        	 arr = diag1.each_with_index.map { |x, y| x = [x, diag2[y]] }
@@ -250,7 +252,6 @@ class ChessController < ApplicationController
       bool = true
      
         move.each do |i|
-          puts "heres each move: #{i}"
           a = arr[i[0]][i[1]]
           
           if a[0] == 0 && pl[1]+1 == i[1]
@@ -346,7 +347,6 @@ class ChessController < ApplicationController
           end
         end
       
-       puts "possible moves: #{possibleMoves}"
        if possibleMoves.empty?
          bool = true
        end
@@ -373,6 +373,8 @@ class ChessController < ApplicationController
             end
           end
         end
+      
+       possibleMoves = kingFilter(possibleMoves)
 
        priThreat = attThreat?(3, color2, possibleMoves)
 
@@ -410,10 +412,14 @@ class ChessController < ApplicationController
        d = newpos[1] 
 
        pieceVal = @@arr[a][b]
-       
+       puts "#{possibleMoves}"
        castleFilter(pieceVal)
        @@cpuMoveInfo = [a,b,c,d,pieceVal]
-       @@arr = pieceMove(a,b,c,d,array,pieceVal)
+        if pieceVal[2] === "king" && (b - d > 1 || d - b > 1) && !check?(@@cpucolor, @@playercolor, array)
+          @@arr = castleMove(pieceVal, a, b, c, d, array)
+        else
+          @@arr = pieceMove(a,b,c,d,array,pieceVal)
+        end
 
     end
 
@@ -522,6 +528,51 @@ class ChessController < ApplicationController
          @@castleFigures.each {|x|  puts "#{x}"}
        end
     end
+    
+    def castleMove(piece, a, b, c, d, arr)
+      str = piece[0] + "" + piece[2] + "" + piece[4].to_s
+      rookPlace = []
+      rook =[]
+      array = arr
+      
+      if d == 6
+          rookStr = piece[0] + "rook" + (d+1).to_s
+          rookPlace = [a, d+1]
+          rook = [a, d-1]
+      elsif d == 2
+          rookStr = piece[0] + "rook" + (d-1).to_s
+          rookPlace = [a, d-2]
+          rook = [a, d+1]
+      elsif d == 1
+          rookStr = piece[0] + "rook" + (d-1).to_s
+          rookPlace = [a, d-1]
+          rook = [a, d+1]
+      elsif d == 5
+          rookStr = piece[0] + "rook" + (d-1).to_s
+          rookPlace = [a, d+2]
+          rook = [a, d-1]
+      end
+     
+      rookPiece = arr[rookPlace[0]][rookPlace[1]]
+      
+      if @@castleFigures[str] != true && @@castleFigures[rookStr] != true && rookPiece != [0]
+          array = arr.each_with_index.map do | e1, i1|
+            e1.each_with_index.map do |e2, i2|
+             if (i1 === a && i2 ===b) || ([i1, i2] == rookPlace)
+              e2 = [0]
+             elsif (i1 === c && i2 === d)
+              e2 = ChessHelper::updatePiece(piece,[c,d])
+             else
+              e2 = arr[i1][i2] 
+             end   
+           end
+         end
+      end
+      @@castleFigures[rookStr] = true
+     array[rook[0]][rook[1]] = ChessHelper::updatePiece(rookPiece, rook)
+     array
+   
+    end
 
     def checkFlash(player)
       flash.alert = "#{player} is in check!!!!"
@@ -537,6 +588,21 @@ class ChessController < ApplicationController
        str
     end
 
+    def kingFilter(arr)
+      bad =[]
+      arr.map do |x|
+        if x[1] === "king"
+          y = x.last
+          if ((y[1] - x[2][1] > 1 ||  x[2][1] - y[1] > 1) || @@arr[y[0]][y[1]] != [0] ) 
+            bad.push(y) 
+          end
+        end
+      end
+      puts "king filter: #{bad}"
+      arr = arr - bad
+
+      arr
+    end 
 end
 
 
