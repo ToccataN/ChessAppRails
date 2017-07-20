@@ -415,6 +415,7 @@ class ChessController < ApplicationController
        puts "#{possibleMoves}"
        castleFilter(pieceVal)
        @@cpuMoveInfo = [a,b,c,d,pieceVal]
+       
         if pieceVal[2] === "king" && (b - d > 1 || d - b > 1) && !check?(@@cpucolor, @@playercolor, array)
           @@arr = castleMove(pieceVal, a, b, c, d, array)
         else
@@ -521,7 +522,7 @@ class ChessController < ApplicationController
     end
 
     def castleFilter(piece)
-       starts = [0 , 7 , [0,7] , [0,0] , [7,0] , [7,7]]
+       starts = [[0, 3], [7, 3] , [0, 4], [7, 4], [0,7] , [0,0] , [7,0] , [7,7]]
        if (piece[2] == "rook" || piece[2] =="king") && starts.include?(piece[4])
          str = piece[0] + "" + piece[2] + "" + piece[4].to_s
          @@castleFigures[str] = true                    
@@ -593,14 +594,14 @@ class ChessController < ApplicationController
       arr.map do |x|
         if x[1] === "king"
           y = x.last
-          if ((y[1] - x[2][1] > 1 ||  x[2][1] - y[1] > 1) || @@arr[y[0]][y[1]] != [0] ) 
-            bad.push(y) 
+          if ((y[1] - x[2][1] > 1 ||  x[2][1] - y[1] > 1) && @@arr[y[0]][y[1]] != [0]  ) 
+            bad.push(x) 
           end
         end
       end
-      puts "king filter: #{bad}"
-      arr = arr - bad
-
+      bad.each do |x|
+          arr.include?(x) ? arr.delete(x) : nil 
+      end
       arr
     end 
 end
