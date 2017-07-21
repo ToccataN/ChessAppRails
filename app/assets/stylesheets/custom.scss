@@ -9,6 +9,12 @@ body{
 
 }
 
+.divMain {
+  display: flex;
+  flex-flow: row;
+  width: 100%;
+}
+
 .flash {
   position: absolute;
   width: 25%;
@@ -29,3 +35,29 @@ body{
   font-weight: bold;
   text-align: center;
 }
+
+.move-contain {
+	max-height: 150px;
+}
+
+.left-turn {
+	margin: 0;
+	width: 50%;
+	float: left;
+}
+
+.right-turn {
+	margin: 0;
+	width: 50%;
+	float: right;
+	
+}
+
+@media (max-width: 768px) and (orientation:portrait) {
+    .divMain {
+        display: block;
+        width: 100%;
+    }
+}
+
+

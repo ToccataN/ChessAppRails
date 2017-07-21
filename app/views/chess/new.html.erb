@@ -1,30 +1,41 @@
-<div class ="container">
-<div class="row">
-<div class = "cpuname col-md-4">
-<h3>Enemy:  </h3>
-<h4><%= tag.div(@cpu, class: %w(name)) %></h4>
-</div>
-</div>
-<div class ="row">
-<div class ="playername col-md-4">
-  <h3>Challenger:  </h3>
-<h4><%= tag.div(@player, class: %w(name)) %></h4>
 
-</div>
-</div>
-</div>
-<div id = 'backboard'>
+<div class="divMain">
 
-<%= render 'chess/board' %>
-
-</div>
-
-<div class="turns container">
+  <div class= "container-fluid">
   <div class="row">
-<div class ="col-md-4 ">
-  <h1> Turn: </h1>
-  <h4><%= @counter %></h4>
-  <h2> Moves: </h2>
-</div>
-</div>
+    <div class = "cpuname col-md-4">
+     <h3>Enemy:  </h3>
+     <h4><%= tag.div(@cpu, class: %w(name)) %></h4>
+    </div>
+  </div>
+  <div class ="row">
+    <div class ="playername col-md-4">
+     <h3>Challenger:  </h3>
+     <h4><%= tag.div(@player, class: %w(name)) %></h4>
+    </div>
+  </div>
+  </div>
+  <div id = 'backboard'>
+
+    <%= render 'chess/board' %>
+
+  </div>
+
+  <div class="turns container-fluid">
+    <div class="row turn-center">
+      <div class ="col-md-4 left-turn">
+        <h1> Turn: </h1>
+      </div>
+      <div class="col-md-4 right-turn col-md-push-2">
+        <h4><%= @counter %></h4>
+      </div>
+    </div>
+    <div class ="row">
+      <div class ="col-md-4 left-turn">
+        <h2> Moves: </h2>
+      </div>
+    </div>
+   </div>
+  </div>
+
 </div>
