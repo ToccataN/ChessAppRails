@@ -79,6 +79,8 @@ body{
 }
 
 @media only screen and (max-device-width: 750px) {
+
+	$length: 315px;
     .divMain {
         display: block;
         width: 100%;
@@ -98,8 +100,8 @@ body{
      }
 
 	@mixin square($length){
-	  width: 48px ; 
-	  height: 48px; 
+	  width: 35px ; 
+	  height: 35px; 
 	  padding: 0%;
 	  border: 1px black solid;
 	  padding-right: -5px;
@@ -126,6 +128,21 @@ body{
 	  border: $mainBorder;
 
 	}
+    .squarer {
+    	@include square($length);
+        background-color: red;
+    }
+    .squareb {
+    	@include square($length);
+        background-color: #252525;
+    }
+    img {
+	    width : 27px;
+	    height: 27px;
+	    padding: 0px;
+	    margin: 0px;
+    }
+
 }
 
 

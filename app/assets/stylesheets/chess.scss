@@ -311,15 +311,15 @@ h3 a:hover {
 }
 
 
-@media only screen and (max-device-width: 750px){
+@media only screen and (max-width: 750px){
    
 
 
-  $length: 420px;
+  $length: 315px;
 
 @mixin square($length){
-  width: 48px ; 
-  height: 48px; 
+  width: 35px ; 
+  height: 35px; 
   padding: 0%;
   border: 1px black solid;
   padding-right: -5px;
@@ -377,6 +377,13 @@ h3 a:hover {
  }
  .squarer:hover {
    border: 2px green solid;
+ }
+
+ img {
+    width : 27px;
+    height: 27px;
+    padding: 0px;
+    margin: 0px;
  }
 
 }
