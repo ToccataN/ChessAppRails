@@ -2,6 +2,23 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+/*
+   TABLE OF CONTENTS
+	   1. Mixins/variables
+		 2. General Page styling
+		 3. Header styling
+		 4. Left side panels
+		 5. Game-Board
+		 6. Turn styling (right side)
+		 7. Pre-game form
+		 8. Win/Lose State
+		 9. Github link style
+		 10. Media Query for screens <= 750px
+*/
+
+
+//mixins
+
 @mixin back($i){
 	background: image-url($i) no-repeat center center fixed;
 	-webkit-background-size: cover;
@@ -15,8 +32,8 @@ $length: 420px;
 $mainBorder: 4px solid #999999;
 
 @mixin square($length){
-	width: 48px ; 
-	height: 48px;	
+	width: 48px ;
+	height: 48px;
 	padding: 0%;
 	border: 1px black solid;
 	padding-right: -5px;
@@ -25,6 +42,8 @@ $mainBorder: 4px solid #999999;
 	font-size: 10pt;
 	font-weight: bold;
 }
+
+//general page styling
 
 html {
   min-width: 100%;
@@ -35,7 +54,7 @@ body {
      min-width: 100%;
   min-height: 100%;
   padding: 0;
-  @include back("zwartevilt.png"); 
+  @include back("zwartevilt.png");
 
 }
 
@@ -44,10 +63,12 @@ body {
 	flex-flow: row-inline;
 }
 
+//header styling
+
 .header {
-   display: inline;	
+   display: inline;
    padding: 2%;
-   
+
 }
 
 .header h1 {
@@ -63,22 +84,25 @@ body {
     font-size: 300%;
 }
 
+//left-side
 
-.cpuname{
+.cpu-name{
 	margin: 0 auto;
   position: relative;
   text-align: left;
 }
 
-.playername {
+.player-name {
 	margin: 0 auto;
 	position: relative;
-  text-align: left; 
+  text-align: left;
 }
 
 h4 {
 	white-space: nowrap;
 }
+
+//board styling
 
 #backboard {
   margin: 0 auto;
@@ -86,7 +110,7 @@ h4 {
   margin-right: 1%;
 	width: $length;
 	height: $length;
-	@include back("chesswall.jpg"); 
+	@include back("chesswall.jpg");
   padding: 15px;
 	flex-flow: row wrap;
 	justify-content: space-around;
@@ -96,24 +120,24 @@ h4 {
 
 }
 
-.squarer {
+.square-r {
 	@include square($length);
     background-color: red;
  }
 
- .squarer:hover {
+ .square-r:hover {
    -moz-box-shadow:    inset 0 0 10px rgba(0,0,255,0.8);
    -webkit-box-shadow: inset 0 0 10px rgba(0,0,255,0.8);
    box-shadow:         inset 0 0 10px rgba(0,0,255,0.8);
-  
+
  }
 
-.squareb {
+.square-b {
 	@include square($length);
     background-color: #252525;
  }
 
-.squareb:hover {
+.square-b:hover {
    -moz-box-shadow:    inset 0 0 10px rgba(0,0,255,0.4);
    -webkit-box-shadow: inset 0 0 10px rgba(0,0,255,0.4);
    box-shadow:         inset 0 0 10px rgba(0,0,255,0.4);
@@ -135,6 +159,8 @@ h4 {
 .selected {
 	border: 2px green solid;
 }
+
+//turn styling
 
 .col-md-4 {
 	width: 50%;
@@ -167,7 +193,7 @@ h4 {
 
 .turns  h4 {
    color: #dd1133;
-   font-size: 150%;	
+   font-size: 150%;
    font-weight: bold;
 }
 
@@ -186,6 +212,7 @@ h4 {
   display: inline-block;
 }
 
+//pre-game form
 
 .form {
     width: 300px;
@@ -225,6 +252,8 @@ h4 {
 .form input[type=submit]:focus {
   outline: 1px solid #923232;
 }
+
+//win/lose state
 
 .win {
     width: 300px;
@@ -267,23 +296,23 @@ h4 {
 	background-color: #989898;
 	border: 1px solid #323232;
 	border-radius: 8%;
- 
+
 }
 
 .button h3 {
     margin-top: 3%;
-	
-	
+
+
 }
 
 h3 a {
 	text-decoration: none;
 	color: red;
-  
+
 }
 
 h3 a:hover {
-  width: 50%; 
+  width: 50%;
 	text-decoration: none;
 	color: green;
 
@@ -295,6 +324,8 @@ h3 a:hover {
    color: #c51121;
 }
 
+//github link styling
+
 .header a {
   margin-left: 4%;
   font-size: 150%;
@@ -304,92 +335,85 @@ h3 a:hover {
 }
 
 .header a:hover {
-  width: 100%; 
+  width: 100%;
 	text-decoration: none;
 	color: green;
 
 }
 
-
+//media query
 @media only screen and (max-width: 750px){
-   
 
 
   $length: 315px;
 
-@mixin square($length){
-  width: 35px ; 
-  height: 35px; 
-  padding: 0%;
-  border: 1px black solid;
-  padding-right: -5px;
-  margin-right: -3px;
-  color: #234535;
-  font-size: 10pt;
-  font-weight: bold;
+	@mixin square($length){
+	  width: 35px ;
+	  height: 35px;
+	  padding: 0%;
+	  border: 1px black solid;
+	  padding-right: -5px;
+	  margin-right: -3px;
+	  color: #234535;
+	  font-size: 10pt;
+	  font-weight: bold;
+	}
+
+
+
+	#backboard {
+	  margin: 0 auto;
+	  margin-left: 1%;
+	  margin-right: 1%;
+	  width: $length;
+	  height: $length;
+	  @include back("chesswall.jpg");
+	  padding: 15px;
+	  flex-flow: row wrap;
+	  justify-content: space-around;
+	  flex: none;
+	  display: inline-flex;
+	  border: $mainBorder;
+
+	}
+
+	.squarer {
+		@include square($length);
+	    background-color: red;
+	 }
+	.squareb {
+		@include square($length);
+	    background-color: #252525;
+	 }
+
+	.name {
+		font-size: 8pt;
+		font-weight: bold;
+		color: #dd1133;
+	}
+
+	.turns  h4 {
+	   color: #dd1133;
+	   font-size: 12pt;
+	   font-weight: bold;
+	   text-align: right;
+	}
+	.selected {
+		border: 1px green solid;
+	}
+
+	.square-b:hover {
+	   border: 2px green solid;
+	 }
+	 .square-r:hover {
+	   border: 2px green solid;
+	 }
+
+	 img {
+	    width : 27px;
+	    height: 27px;
+	    padding: 0px;
+	    margin: 0px;
+	 }
+
 }
-
-
-
-#backboard {
-  margin: 0 auto;
-  margin-left: 1%;
-  margin-right: 1%;
-  width: $length;
-  height: $length;
-  @include back("chesswall.jpg"); 
-  padding: 15px;
-  flex-flow: row wrap;
-  justify-content: space-around;
-  flex: none;
-  display: inline-flex;
-  border: $mainBorder;
-
-}
-
-.squarer {
-	@include square($length);
-    background-color: red;
- }
-.squareb {
-	@include square($length);
-    background-color: #252525;
- }
-
-.name {
-	font-size: 8pt;
-	font-weight: bold;
-	color: #dd1133;
-}
-
-.turns  h4 {
-   color: #dd1133;
-   font-size: 12pt;	
-   font-weight: bold;
-   text-align: right;
-}
-.selected {
-	border: 1px green solid;
-}
-
-.squareb:hover {
-   border: 2px green solid;
- }
- .squarer:hover {
-   border: 2px green solid;
- }
-
- img {
-    width : 27px;
-    height: 27px;
-    padding: 0px;
-    margin: 0px;
- }
-
-}
-
-
-
-
-
-

@@ -10,9 +10,9 @@
    <%  c[0] == 0 || c[1] == "unknown" ? view = int : view = image_tag("#{c[0]}#{c[2]}.png") %>
    <%   %>
    <% if j % 2 === 0 %>
-     <%=  s%2 === 1 ? content_tag("div", view , class:  %w(squarer), data:  {val: pos})  : content_tag( "div", view, class: %w(squareb), data:  {val: pos} ) %>
-   <% else %> 
-     <%=  s%2 === 0 ?  content_tag("div", view, class:  %w(squarer), data:  {val: pos} ) : content_tag("div", view, class: %w(squareb),  data:  {val: pos} ) %>
+     <%=  s%2 === 1 ? content_tag("div", view , class:  %w(square-r), data:  {val: pos})  : content_tag( "div", view, class: %w(square-b), data:  {val: pos} ) %>
+   <% else %>
+     <%=  s%2 === 0 ?  content_tag("div", view, class:  %w(square-r), data:  {val: pos} ) : content_tag("div", view, class: %w(square-b),  data:  {val: pos} ) %>
    <% end %>
   <% end %>
 <% end %>
