@@ -7,8 +7,9 @@
    <% number = (1..8).to_a %>
    <% pos = [j, s] %>
    <% int = "#{letter[j]}#{number[s]}" %>
-   <%  c[0] == 0 || c[1] == "unknown" ? view = int : view = image_tag("#{c[0]}#{c[2]}.png") %>
-   <%   %>
+  
+   <%  c[:color] == 0 ? view = int : view = image_tag("#{c[:color]}#{c[:name]}.png") %>
+
    <% if j % 2 === 0 %>
      <%=  s%2 === 1 ? content_tag("div", view , class:  %w(square-r), data:  {val: pos})  : content_tag( "div", view, class: %w(square-b), data:  {val: pos} ) %>
    <% else %>

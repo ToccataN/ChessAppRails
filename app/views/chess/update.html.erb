@@ -4,13 +4,13 @@
     <div class="row">
       <div class = "cpu-name col-md-4">
         <h3>Enemy:  </h3>
-        <h4><%= tag.div(@cpu, class: %w(name)) %></h4>
+        <h4><%= tag.div(@cpu[:name], class: %w(name)) %></h4>
       </div>
     </div>
     <div class ="row">
       <div class ="player-name col-md-4">
         <h3>Challenger:  </h3>
-        <h4><%= tag.div(@player, class: %w(name)) %></h4>
+        <h4><%= tag.div(@player[:name], class: %w(name)) %></h4>
       </div>
     </div>
   </div>
