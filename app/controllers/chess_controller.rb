@@ -31,15 +31,14 @@ class ChessController < ApplicationController
     @@cpuCheckmate = false
     #counter
     @counter = 1
+		@moves = {}
 		#persistent board state glabal init
-
+    stateUpdate(@arr, @cpu, @player, @counter, @moves)
 		#if cpu goes first
     if color == "black"
-      cpumove(@cpu[:color], @player[:color], @arr)
-			@game[:board] = @arr
+      @arr = cpumove(@cpu[:color], @player[:color], @arr)
     end
 
-    @moves = {}
     @@cpuMoveInfo = []
     stateUpdate(@arr, @cpu, @player, @counter, @moves)
 
@@ -82,10 +81,10 @@ class ChessController < ApplicationController
       array = copy(@arr)
       #is the move legal?
       if possible(pieceVal, squareVal, a, b, c, d, array, false, @player[:color], @cpu[:color])
-       preCheck(a, b, c, d, pieceVal, @player[:color], @cpu[:color], array) ?  @arr = pieceMove(a,b,c,d,array,pieceVal) : nil
+       preCheck(a, b, c, d, pieceVal, @player[:color], @cpu[:color], array) ?  @arr = pieceMove(a,b,c,d,@arr,pieceVal) : nil
 			 array = copy(@arr)
-		 	 if !sequence(@cpu, @player, array)
-			   @arr = cpumove(@cpu[:color], @player[:color], array)
+		 	 if !sequence(@cpu, @player, @arr)
+			   @arr = cpumove(@cpu[:color], @player[:color], @arr)
 			 else
 				 return redirect_to win_path
 			 end
@@ -273,10 +272,7 @@ class ChessController < ApplicationController
 
     def check?(c1, c2, arr, piece=nil)
       kingPos = [0, 0]
-
-      if piece != nil && piece[:curpos] != kingPos && piece[:name] === "king"
-        kingPos = piece[:curpos]
-			else
+      bool = false
 				arr.each do |x|
           x.each do |y|
 						if y[:color] == c1 && y[:name] == 'king'
@@ -284,7 +280,7 @@ class ChessController < ApplicationController
 						end
 					end
 				end
-      end
+
       puts "Kingpos #{kingPos}"
       arr.each do |i|
          i.each do |j|
@@ -292,14 +288,13 @@ class ChessController < ApplicationController
 							 puts c2
               if possible(j, arr[kingPos[0]][kingPos[1]] , j[:curpos][0],
 								          j[:curpos][1], kingPos[0], kingPos[1], arr, true, c1, c2)
-                return  true
-							else
-								return  false
+                 j[:moves].include?(kingPos) ?  bool = true : nil
               end
              end
          end
       end
 
+      return bool
     end
 
     def preCheck(a, b, c, d, piece, c1, c2, arr)
@@ -324,7 +319,7 @@ class ChessController < ApplicationController
     def cpumove(color1, color2, arr)
     #puts all possible, valid computer moves
 		   array = copy(arr)
-       possibleMoves = posMoves(color1, color2, array)
+       possibleMoves = posMoves(color1, color2, arr)
        attackMoves =[]
 
        #puts "possible moves: #{nonThreat}"
@@ -374,7 +369,7 @@ class ChessController < ApplicationController
 		           end
 		        end
 		      end
-		      array
+		    return  array
 	  end
 
     def canAttack?(color1, arr)
@@ -426,7 +421,7 @@ class ChessController < ApplicationController
         end
       end
 
-      array
+      return array
     end
 
 		def vCopy(a, b, c, d, arr, piece)
@@ -443,6 +438,7 @@ class ChessController < ApplicationController
  				 end
  			 end
  		 end
+		 return array
 		end
 
 		def posMoves(color1, color2, array)
