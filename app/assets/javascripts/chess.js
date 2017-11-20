@@ -13,7 +13,7 @@ $(document).on('turbolinks:load', function(){
             $("#backboard div").removeClass("selected");
             $.ajax ({
              type: 'POST',
-             url: "https://chessappdenaux.herokuapp.com/"+val,
+             url: "https://chessappdenaux.herokuapp.com/chess/"+val,
              success: function(d){
                 if(d === true){
                   me.addClass("selected");
