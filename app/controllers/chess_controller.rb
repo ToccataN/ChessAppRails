@@ -43,7 +43,7 @@ class ChessController < ApplicationController
 
     @@cpuMoveInfo = []
     @@State = stateUpdate(@arr, @cpu, @player, @counter, @moves)
-    Rails.cache.write(name, @@State)
+    Rails.cache.write name, @@State
   end
 
  def select
@@ -97,14 +97,14 @@ class ChessController < ApplicationController
 
        @moves[@counter] = pastMove(piece, square, @@cpuMoveInfo)
        @counter += 1
- 		   Rails.cache.write(name, stateUpdate(array, @cpu, @player, @counter, @moves))
+ 		   Rails.cache.write name, stateUpdate(array, @cpu, @player, @counter, @moves)
        return redirect_to update_path
       end
 
     end
 
     def update
-			@@State = Rails.cache.fetch(name)
+			@@State = Rails.cache.read name
       @arr = @@State[:arr]
       @cpu = @@State[:cpu]
       @player = @@State[:player]
