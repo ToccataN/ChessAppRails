@@ -135,6 +135,17 @@ class ChessController < ApplicationController
 
        if ((piece[:color] != s[:color]) && (checkBetween(piece, a, b, c, d, arr,checking, c1, c2)))
        	 bool = piece[:moves].any? {|x| x === [c,d]}
+				 if (piece[:name] == 'king' && checking == false)
+					 if (piece[:repos] === false && castle(a, b, c, d, arr) && (b-d).abs > 1 && bool === true)
+	         bool = true
+				   elsif ((b-d).abs > 1)
+					 bool = false
+				   elsif ((b-d).abs === 1)
+						bool = true
+				   else
+					 bool = false
+				   end
+				 end
 				 bool
        end
 
@@ -275,17 +286,16 @@ class ChessController < ApplicationController
       bool = false
 				arr.each do |x|
           x.each do |y|
+						#puts "this? #{x} #{y}"
 						if y[:color] == c1 && y[:name] == 'king'
 							 kingPos = y[:curpos]
 						end
 					end
 				end
 
-      puts "Kingpos #{kingPos}"
       arr.each do |i|
          i.each do |j|
              if j[:color] == c2
-							 puts c2
               if possible(j, arr[kingPos[0]][kingPos[1]] , j[:curpos][0],
 								          j[:curpos][1], kingPos[0], kingPos[1], arr, true, c1, c2)
                  j[:moves].include?(kingPos) ?  bool = true : nil
@@ -293,13 +303,11 @@ class ChessController < ApplicationController
              end
          end
       end
-
       return bool
     end
 
     def preCheck(a, b, c, d, piece, c1, c2, arr)
       array = vCopy(a, b, c, d, arr, piece)
-
       return !check?(c1, c2, array, piece)
       #puts "#{a} #{b} #{c} #{d}"
     end
@@ -336,7 +344,7 @@ class ChessController < ApplicationController
 
        pieceVal = @@State[:arr][a][b]
 
-      puts "possible moves for cpu:  #{possibleMoves}"
+      #puts "possible moves for cpu:  #{possibleMoves}"
       @@cpuMoveInfo = [a,b,c,d,pieceVal]
 
       @arr = pieceMove(a,b,c,d,array,pieceVal)
@@ -354,14 +362,25 @@ class ChessController < ApplicationController
     end
 
 	  def pieceMove(a,b,c,d,array,piece)
+					 r = [a, b, c, d, false]
+
 		       array = array.each_with_index.map do | e1, i1|
 		         e1.each_with_index.map do |e2, i2|
 		           if (i1 === a && i2 ===b)
 		              e2 = {:color => 0 ,:name => "unknown", :start => 0}
 		           elsif (i1 === c && i2 === d)
-		              if piece[:name] != "pawn"
+								  if (piece[:name] == 'king') && (piece[:repos]===true || (b-d).abs === 1)
+										puts "king1 ?#{piece} fun111: #{(b-d).abs}"
+										e2 = ChessHelper::updatePiece(piece,[c,d])
+								  elsif (piece[:name] == 'king' && (b-d).abs > 1 )
+                    puts "king2 ?#{piece}"
+										r = castleMove(a, b, c, d)
+										e2 = ChessHelper::updatePiece(piece,[c,d])
+  							  elsif piece[:name] != "pawn" && piece[:name] != 'king'
+										puts "king3 ?#{piece}"
 		                e2 = ChessHelper::updatePiece(piece,[c,d])
 		              else
+										puts "king4 ?#{piece}"
 		                e2 = pawnChange(piece, [c,d])
 		             end
 		           else
@@ -369,6 +388,10 @@ class ChessController < ApplicationController
 		           end
 		        end
 		      end
+					if r[4] === true
+						puts "piece: #{r[0]} #{r[1]} #{r[2]} #{r[3]} #{array[r[0]][r[1]]} king? #{array[r[0]][r[1]-1]}"
+            array = pieceMove(r[0], r[1], r[2], r[3], array, array[r[0]][r[1]])
+					end
 		    return  array
 	  end
 
@@ -457,8 +480,49 @@ class ChessController < ApplicationController
 			end
       return possibleMoves
     end
+
+		def castle(a, b, c, d, arr)
+      arr = copy(arr)
+      #puts " castle counts #{b} #{d}"
+			if arr[c][d+1][:name] == "rook"  && !arr[c][d+1][:repos]
+          return true
+		  elsif arr[c][d-1][:name] == "rook"  && arr[c][d-1][:repos]
+		  		return true
+			elsif arr[c][d-2][:name] == "rook"  && !arr[c][d+2][:repos]
+				  return true
+		  elsif arr[c][d+2][:name] == "rook"  && !arr[c][d-2][:repos]
+				  return true
+		  end
+
+		end
+
+		def castleMove(a, b, c, d)
+
+				 if b < d && b === 4
+					 cY = a
+					 cX = d+1
+					 cY2 = c
+					 cX2 = d-1
+				 elsif b > d && b === 3
+					 cY = a
+					 cX = d-1
+					 cY2 = c
+					 cX2 = d+1
+				 elsif b > d && b === 4
+					 cY = a
+					 cX = d-2
+					 cY2 = c
+					 cX2 = d+1
+				 else
+					cY = a
+			  	cX = d+2
+					cY2 = c
+					cX2 = d-1
+				 end
+       return [cY, cX, cY2, cX2, true]
+		end
 =begin
-    def castleMove(piece, a, b, c, d, arr)
+    def castleMove( a, b, c, d, arr)
       rookPlace = []
       rook =[]
       array = arr

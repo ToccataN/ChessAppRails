@@ -139,7 +139,7 @@ module ChessHelper
 
   	def att
 	 	  piece = {:color => @color, :name => "rook", :n => @n,:moves => move,
-				:start => @start_index, :curpos => @curpos, :repos => false}
+				:start => @start_index, :curpos => @curpos, :repos => @r}
 	  	piece
 	  end
   end
@@ -268,7 +268,7 @@ module ChessHelper
 
 	  def att
 		  piece = {:color => @color, :name => "king", :n => @n,:moves => move,
-			 	:start => @start_index, :curpos => @curpos, :repos => false }
+			 	:start => @start_index, :curpos => @curpos, :repos => @r }
 		  piece
 	  end
   end
@@ -342,18 +342,16 @@ module ChessHelper
 				 {:color => col,:name => "unknown", :start => 0}
 			end
 		end
-
-
 #end Board Class
  end
 
  def self.updatePiece(arr, n)
-   l = Piece.new(arr[:color], arr[:n], arr[:start], n).update
+   l = Piece.new(arr[:color], arr[:n], arr[:start], n, true).update
    l
  end
 
- def self.pawnFun(arr, cur)
-   l = Piece.new(arr[:color], 'q', arr[:curpos], cur).update
+ def self.pawnFun(arr, n)
+   l = Piece.new(arr[:color], 'q', arr[:curpos], n).update
    l
  end
 #module end
