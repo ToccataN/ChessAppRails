@@ -104,7 +104,7 @@ class ChessController < ApplicationController
     end
 
     def update
-			@@State = Rails.cache.read(name)
+			@@State = Rails.cache.fetch(name)
       @arr = @@State[:arr]
       @cpu = @@State[:cpu]
       @player = @@State[:player]
