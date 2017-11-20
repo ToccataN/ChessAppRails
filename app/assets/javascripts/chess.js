@@ -28,7 +28,7 @@ $(document).on('turbolinks:load', function(){
              type: 'POST',
              //  http://localhost:3000
              // https://chessappdenaux.herokuapp.com
-             url: "https://chessappdenaux.herokuapp.com/chess/" + sv + "/" + val,
+             url: "https://chessappdenaux.herokuapp.com/" + sv + "/" + val,
              success: function(d){
                 count = 0;
              }

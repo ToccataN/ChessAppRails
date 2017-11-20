@@ -14,9 +14,11 @@ class ChessController < ApplicationController
 		  :counter => co,
 		  :moves => m
 		}
+		return @@State
 	end
 
   def new
+		Rails.cache.clear
   	# board setup
     name = params[:name]
     color = params[:color]
@@ -33,15 +35,15 @@ class ChessController < ApplicationController
     @counter = 1
 		@moves = {}
 		#persistent board state glabal init
-    stateUpdate(@arr, @cpu, @player, @counter, @moves)
+    @@State = stateUpdate(@arr, @cpu, @player, @counter, @moves)
 		#if cpu goes first
     if color == "black"
       @arr = cpumove(@cpu[:color], @player[:color], @arr)
     end
 
     @@cpuMoveInfo = []
-    stateUpdate(@arr, @cpu, @player, @counter, @moves)
-
+    @@State = stateUpdate(@arr, @cpu, @player, @counter, @moves)
+    Rails.cache.write :state, @@State
   end
 
  def select
@@ -95,13 +97,14 @@ class ChessController < ApplicationController
 
        @moves[@counter] = pastMove(piece, square, @@cpuMoveInfo)
        @counter += 1
- 		   stateUpdate(array, @cpu, @player, @counter, @moves)
+ 		   Rails.cache.write :state, stateUpdate(array, @cpu, @player, @counter, @moves)
        return redirect_to update_path
       end
 
     end
 
     def update
+			@@State = Rails.cache.read :state
       @arr = @@State[:arr]
       @cpu = @@State[:cpu]
       @player = @@State[:player]
@@ -140,7 +143,7 @@ class ChessController < ApplicationController
 	         bool = true
 				   elsif ((b-d).abs > 1)
 					 bool = false
-				   elsif ((b-d).abs === 1)
+				   elsif ((b-d).abs < 2)
 						bool = true
 				   else
 					 bool = false
