@@ -81,7 +81,7 @@ body {
 	  @include back("panel.jpg");
     color: #212121;
     font-weight: bold;
-    font-size: 300%;
+    font-size: 200%;
 }
 
 //left-side
@@ -342,7 +342,7 @@ h3 a:hover {
 }
 
 //media query
-@media only screen and (max-width: 750px){
+@media all and (max-width: 750px){
 
 
   $length: 315px;
