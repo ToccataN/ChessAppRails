@@ -348,8 +348,8 @@ h3 a:hover {
   $length: 315px;
 
 	@mixin square($length){
-	  width: 35px ;
-	  height: 35px;
+	  max-width: 35px ;
+	  max-height: 35px;
 	  padding: 0%;
 	  border: 1px black solid;
 	  padding-right: -5px;

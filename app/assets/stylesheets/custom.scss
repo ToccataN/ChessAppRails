@@ -96,12 +96,13 @@ body{
 
 //Device Media Query
 
-@media only screen and (max-device-width: 750px) {
+@media only screen and (max-width: 750px) {
 
    $length: 315px;
       .divMain {
           display: block;
           width: 100%;
+          margin: 0 auto;
       }
       .cpu-name{
          margin: 0 auto;
