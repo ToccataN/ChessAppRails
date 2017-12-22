@@ -1,4 +1,4 @@
-<h1>CHESS  </h1>
+<h1>CHESS <%= button_to "rollback", {:controller => "chess", :action => "rollback"},{class: 'r-button'} %> </h1>
 <a href="https://github.com/ToccataN/ChessAppRails">github: https://github.com/ToccataN/ChessAppRails</a>
  <% if @player != nil %>
    <% if @player[:checked?]  %>

@@ -151,10 +151,11 @@ class ChessController < ApplicationController
 		end
 
 		def rollback
-			if (@@State[:counter]==2)
+			if (@@State[:counter]<=2)
         return redirect_to root_path
 			end
-			Turn.where(games_id: @@current_game.id).where(turn: @@State[:counter]).first
+		  Turn.where(games_id: @@current_game.id).where(turn: @@State[:counter]).first.destroy
+
 			count = @@State[:counter] - 1
       @newState = Turn.where(games_id: @@current_game.id).where(turn: count).first
 			theBoard = JSON.parse(@newState.board)
