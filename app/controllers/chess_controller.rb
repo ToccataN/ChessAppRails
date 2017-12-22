@@ -33,7 +33,8 @@ class ChessController < ApplicationController
 		@arr = game[:board]
     @cpu = game[:cpu]
     @player = game[:player]
-
+    @@current_game = Games.create!(player: @player)
+    @@cpu = game[:cpu]
     #globalized check variables
     @@playerCheckmate = false
     @@cpuCheckmate = false
@@ -119,6 +120,18 @@ class ChessController < ApplicationController
       @player = @@State[:player]
       @counter = @@State[:counter]
       @moves = @@State[:moves]
+			arrHash = {}
+			@arr.each_with_index do |i, x|
+        i.each_with_index do |j, y|
+          prop = x.to_s+""+y.to_s
+					arrHash[prop] = j
+				end
+			end
+			#puts arrHash.to_json
+			#puts arr
+		  Turn.create!(turn: @counter, board: arrHash.to_json, games_id: @@current_game.id, pmoves: @@State[:moves].to_json)
+			turn_id = Turn.where(turn:@counter).first.id
+
     end
 
 		def pastMove(p, s, cpu)
@@ -136,5 +149,44 @@ class ChessController < ApplicationController
 		def checkFlash(player)
 			flash.alert = "#{player} is in check!!!!"
 		end
+
+		def rollback
+			if (@@State[:counter]==2)
+        return redirect_to root_path
+			end
+			Turn.where(games_id: @@current_game.id).where(turn: @@State[:counter]).first
+			count = @@State[:counter] - 1
+      @newState = Turn.where(games_id: @@current_game.id).where(turn: count).first
+			theBoard = JSON.parse(@newState.board)
+
+      array = Array.new(8){Array.new(8)}
+      theBoard.each do |key, value|
+        key = key.split("")
+				a = key[0].to_i
+				b = key[1].to_i
+				value = value.deep_symbolize_keys
+			  array.each_with_index do |i, x|
+					i.each_with_index do |j, y|
+						if (x === a && y === b)
+               array[x][y] = value
+						end
+			    end
+		    end
+
+			end #end hash iterator
+
+			@moves = JSON.parse(@newState.pmoves)
+			@@State = stateUpdate(array, @@State[:cpu], @@State[:player], count, @moves)
+			@State = @@State
+      @arr = @@State[:arr]
+      @cpu = @@State[:cpu]
+      @player = @@State[:player]
+      @counter = @@State[:counter]
+      @moves = @@State[:moves]
+
+      #puts "\n this is the array!       \n\n   #{array}"
+		end
+
+
 
 end
