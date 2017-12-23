@@ -16,7 +16,8 @@ ActiveRecord::Schema.define(version: 20171122170721) do
   enable_extension "plpgsql"
 
   create_table "games", force: :cascade do |t|
-    t.string "player"
+    t.json "player"
+    t.json "cpu"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

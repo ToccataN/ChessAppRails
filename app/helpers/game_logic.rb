@@ -30,13 +30,13 @@ module GameLogic
        bool = piece[:moves].any? {|x| x === [c,d]}
        if (piece[:name] == 'king' && checking == false)
          if (piece[:repos] === false && castle(a, b, c, d, arr) && (b-d).abs > 1 && bool === true)
-         bool = true
-         elsif ((b-d).abs > 1)
-         bool = false
+          bool = true
+         elsif ((b-d).abs > 1 || (a-c).abs > 1)
+          bool = false
          elsif ((b-d).abs < 2)
           bool = true
          else
-         bool = false
+          bool = false
          end
        end
        bool
@@ -221,14 +221,21 @@ module GameLogic
   #puts all possible, valid computer moves
      array = copy(arr)
      possibleMoves = posMoves(color1, color2, arr)
-     attackMoves =[]
+     tPieces = threatennedPieces(color1, color2, arr)
+     attackMoves = canAttack?(color2, possibleMoves, arr)
 
-     #puts "possible moves: #{nonThreat}"
+     puts "possible moves: #{tPieces}"
+
      #random possible move
-
+     if attackMoves.size > 0
+       index = rand(0...attackMoves.size)
+       curpos = attackMoves[index][2]
+       newpos = attackMoves[index][3]
+     else
        index = rand(0...possibleMoves.size)
        curpos = possibleMoves[index][2]
        newpos = possibleMoves[index][3]
+     end
 
      a = curpos[0]
      b = curpos[1]
@@ -288,44 +295,79 @@ module GameLogic
       return  array
   end
 
-  def canAttack?(color1, arr)
+  def threatennedPieces(color1, color2, arr)
+    tPieces =[]
+    arr.each do |i|
+      i.each do |j|
+        if j[:color] == color1 && threats(color1, color2, j[:curpos], arr)
+          tPieces.push(j)
+        end
+      end
+    end
+    return tPieces
+  end
+
+  def threats(color1, color2,curpos, arr)
+    bool = false
+    arr.each do |i|
+      i.each do |j|
+        if j[:color] == color2 && j[:moves].include?(curpos)
+          j[:moves].each do |x|
+            if (possible(j, arr[x[0]][x[1]], j[:curpos][0], j[:curpos][1],x[0], x[1], arr, true, color1, color2) && preCheck(j[:curpos][0], j[:curpos][1], x[0], x[1], j, color1, color2, arr))
+               bool = true
+            end
+          end
+        end
+      end
+    end
+    return  bool
+  end
+
+  def canAttack?(color1, pos,  arr)
      newArr=[]
-     arr.each do |i|
-       if i.is_a?(Hash)
-       j = i[:moves]
-         enemyPiece = @@arr[j[0]][j[1]]
-         if enemyPiece[:color] === color1
+     array = copy(arr)
+     pos.each do |i|
+       j = i.last
+       piece = i[2]
+         enemyPiece = array[j[0]][j[1]]
+         if enemyPiece[:color] == color1  && attThreat?(enemyPiece, piece, array)
            newArr.push(i)
          end
-     end
      end
      newArr
   end
 
-  def attThreat?(n, color1, arr)
-       threats =[]
-       arr.each do |i|
-         j = i[n]
-         if filter(i, j, color1)
-            threats.push(i)
+  def attThreat?(enemy, piece, arr)
+
+       array = copy(arr)
+       piece = array[piece[0]][piece[1]]
+       if enemy.has_key?(:rank)
+         if piece[:rank] > enemy[:rank] && filter(array, enemy, piece)
+           return false
          end
+       elsif enemy[:color] == 0 && filter(array, enemy, piece)
+           return false
        end
-       #puts "#{threats}"
-       threats
+       return true
 
   end
 
-  def filter(col, j, c)
-        array = copy(@@arr)
-
-         array.each_with_index do |i, x|
-            i.each_with_index do |b, y|
-               if b[:color] ==  c && b != 0
-                 b[:moves].each {|sq|  (sq === j && possible(b, col, sq[0], sq[1], j[0], j[1], array, true)) ? true : false }
-               end
-             end
-         end
-
+  def filter(arr, enemy, piece)
+        color1 = enemy[:color]
+        color2 = piece[:color]
+        bool = false
+        arr.each do |i|
+          i.each do |j|
+            if j[:color] == color1 && j[:moves].include?(enemy[:curpos])
+              j[:moves].each do |x|
+                if (possible(j, arr[x[0]][x[1]], j[:curpos][0], j[:curpos][1],x[0], x[1], arr, true, color1, color2) && preCheck(j[:curpos][0], j[:curpos][1], x[0], x[1], j, color1, color2, arr))
+                  bool = true
+                end
+              end
+            end
+          end
+        end
+        return bool
   end
 
   def copy(arr)

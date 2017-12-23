@@ -1,7 +1,7 @@
 class ChessController < ApplicationController
 	include ChessHelper
 	extend ChessHelper
-
+  #initialize game_logic module
 	class Logic
 	  include GameLogic
   end
@@ -9,7 +9,7 @@ class ChessController < ApplicationController
 	@@logic = Logic.new
 
   def pre
-
+    reset_session
   end
 
   def stateUpdate(a, c, p, co, m)
@@ -26,6 +26,7 @@ class ChessController < ApplicationController
   def new
 		#Rails.cache.clear
   	# board setup
+		reset_session
     name = params[:name]
     color = params[:color]
   	game = Game.new(color, name).gameState
@@ -33,17 +34,22 @@ class ChessController < ApplicationController
 		@arr = game[:board]
     @cpu = game[:cpu]
     @player = game[:player]
-    @@current_game = Games.create!(player: @player)
-    @@cpu = game[:cpu]
+    @@current_game = Games.create!(player: @player.to_json, cpu: @cpu.to_json)
+		session[:game] = @@current_game.id
+		session[:counter] = @counter
     #globalized check variables
     @@playerCheckmate = false
     @@cpuCheckmate = false
     #counter
     @counter = 1
 		@moves = {}
+
 		#persistent board state glabal init
     @@State = stateUpdate(@arr, @cpu, @player, @counter, @moves)
 		@State = @@State
+
+		boarder = hasher(@arr)
+		Turn.create!(turn: session[:counter], board: boarder.to_json, games_id: session[:game], pmoves: @@State[:moves].to_json)
 		#if cpu goes first
     if color == "black"
       @arr = @@logic.cpumove(@cpu[:color], @player[:color], @arr)
@@ -106,6 +112,10 @@ class ChessController < ApplicationController
 
        @moves[@counter] = pastMove(piece, square, @@logic.cpuMoveInfo)
        @counter += 1
+			 session[:counter] = @counter
+
+			 arrHash = hasher(array)
+			 Turn.create!(turn: session[:counter], board: arrHash.to_json, games_id: session[:game], pmoves: @@State[:moves].to_json)
  		   @@State = stateUpdate(array, @cpu, @player, @counter, @moves)
 			 @player[:checked?] ? checkFlash(@player[:name]) : nil
        return redirect_to update_path
@@ -114,23 +124,20 @@ class ChessController < ApplicationController
     end
 
     def update
-			@State = @@State
-      @arr = @@State[:arr]
-      @cpu = @@State[:cpu]
-      @player = @@State[:player]
-      @counter = @@State[:counter]
-      @moves = @@State[:moves]
-			arrHash = {}
-			@arr.each_with_index do |i, x|
-        i.each_with_index do |j, y|
-          prop = x.to_s+""+y.to_s
-					arrHash[prop] = j
-				end
-			end
+			  @newState = Turn.where(games_id: session[:game], turn: session[:counter]).first
+			  array = stringParser(@newState.board)
+			  @moves = JSON.parse(@newState.pmoves)
+			  @player = JSON.parse(Games.find(session[:game]).player).symbolize_keys
+			  @cpu = JSON.parse(Games.find(session[:game]).cpu).symbolize_keys
+			  @@State = stateUpdate(array, @cpu, @player, session[:counter], @moves)
+        @counter = @@State[:counter]
+
 			#puts arrHash.to_json
 			#puts arr
-		  Turn.create!(turn: @counter, board: arrHash.to_json, games_id: @@current_game.id, pmoves: @@State[:moves].to_json)
-			turn_id = Turn.where(turn:@counter).first.id
+
+			turn_id = Turn.where(games_id: session[:game], turn: session[:counter]).first.id
+			arr = Turn.find(turn_id).board
+			@arr = stringParser(arr)
 
     end
 
@@ -138,9 +145,9 @@ class ChessController < ApplicationController
 	     letter = ('a'..'h').to_a
 	     number = (1..8).to_a
 
-	     str1 = "#{@player} #{letter[p[0]]}#{number[p[2]]} -->
+	     str1 = "#{@player[:name]} #{letter[p[0]]}#{number[p[2]]} -->
 	             #{letter[s[0]]}#{number[s[2]]}; "
-	     str2 = "#{@cpu} #{letter[cpu[0]]}#{number[1]} -->
+	     str2 = "#{@cpu[:name]} #{letter[cpu[0]]}#{number[1]} -->
 	             #{letter[cpu[2]]}#{number[cpu[3]]}"
 	     str = str1 + str2
 	     str
@@ -151,14 +158,25 @@ class ChessController < ApplicationController
 		end
 
 		def rollback
-			if (@@State[:counter]<=2)
+			if session[:counter].nil? || session[:counter] - 1 < 2
         return redirect_to root_path
-			end
-		  Turn.where(games_id: @@current_game.id).where(turn: @@State[:counter]).first.destroy
+			else
+		  Turn.where(games_id: session[:game], turn: session[:counter]).first.destroy
 
-			count = @@State[:counter] - 1
-      @newState = Turn.where(games_id: @@current_game.id).where(turn: count).first
-			theBoard = JSON.parse(@newState.board)
+			session[:counter] = session[:counter] - 1
+      @newState = Turn.where(games_id: session[:game], turn: session[:counter]).first
+			@arr = stringParser(@newState.board)
+			@moves = JSON.parse(@newState.pmoves)
+			@player = JSON.parse(Games.find(session[:game]).player).symbolize_keys
+			@cpu = JSON.parse(Games.find(session[:game]).cpu).symbolize_keys
+			@@State = stateUpdate(@arr, @cpu, @player, session[:counter], @moves)
+      @counter = @@State[:counter]
+		end
+      #puts "\n this is the array!       \n\n   #{array}"
+		end
+
+		def stringParser(arr)
+			theBoard = JSON.parse(arr)
 
       array = Array.new(8){Array.new(8)}
       theBoard.each do |key, value|
@@ -175,19 +193,19 @@ class ChessController < ApplicationController
 		    end
 
 			end #end hash iterator
-
-			@moves = JSON.parse(@newState.pmoves)
-			@@State = stateUpdate(array, @@State[:cpu], @@State[:player], count, @moves)
-			@State = @@State
-      @arr = @@State[:arr]
-      @cpu = @@State[:cpu]
-      @player = @@State[:player]
-      @counter = @@State[:counter]
-      @moves = @@State[:moves]
-
-      #puts "\n this is the array!       \n\n   #{array}"
+			return array
 		end
 
+		def hasher(arr)
+			arrHash = {}
+			arr.each_with_index do |i, x|
+        i.each_with_index do |j, y|
+          prop = x.to_s+""+y.to_s
+					arrHash[prop] = j
+				end
+			end
+			return arrHash
+		end
 
 
 end

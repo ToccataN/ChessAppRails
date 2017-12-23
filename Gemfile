@@ -35,7 +35,7 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'nested-hstore'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
-
+gem 'nokogiri', '~> 1.8.1'
 gem "jquery-rails"
 gem "jquery-ui-rails"
 

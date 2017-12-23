@@ -114,7 +114,7 @@ module ChessHelper
 
     def att
       piece = {:color => @color, :name => "pawn", :n => @n,:moves => move,
-	      :start => @start_index, :curpos => @curpos, :repos => @r}
+	      :start => @start_index, :curpos => @curpos, :repos => @r, :rank => 1}
 		  piece
     end
   end
@@ -139,7 +139,7 @@ module ChessHelper
 
   	def att
 	 	  piece = {:color => @color, :name => "rook", :n => @n,:moves => move,
-				:start => @start_index, :curpos => @curpos, :repos => @r}
+				:start => @start_index, :curpos => @curpos, :repos => @r, :rank => 5}
 	  	piece
 	  end
   end
@@ -160,7 +160,7 @@ module ChessHelper
 
 	 def att
 	    piece = {:color => @color, :name => "knight", :n => @n,:moves => move,
-		      :start => @start_index, :curpos => @curpos}
+		      :start => @start_index, :curpos => @curpos, :rank => 3}
 			piece
    end
   end
@@ -194,7 +194,7 @@ module ChessHelper
 
 	  def att
 		  piece = {:color => @color, :name => "bishop", :n => @n,:moves => move,
-				:start => @start_index, :curpos => @curpos}
+				:start => @start_index, :curpos => @curpos, :rank => 3}
 		  piece
 	  end
   end
@@ -240,7 +240,7 @@ module ChessHelper
 
 	  def att
 		  piece = {:color => @color, :name => "queen", :n => @n,:moves => move,
-				:start => @start_index, :curpos => @curpos}
+				:start => @start_index, :curpos => @curpos, :rank => 9}
 		  piece
 	  end
   end
@@ -268,7 +268,7 @@ module ChessHelper
 
 	  def att
 		  piece = {:color => @color, :name => "king", :n => @n,:moves => move,
-			 	:start => @start_index, :curpos => @curpos, :repos => @r }
+			 	:start => @start_index, :curpos => @curpos, :repos => @r, :rank => 100 }
 		  piece
 	  end
   end

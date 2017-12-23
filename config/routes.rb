@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   post '/chess/:pos' => 'chess#select'
   post '/chess/:piece/:square' => 'chess#move'
   get '/update', to: 'chess#update'
+  get '/rollback', to: 'chess#update'
   post '/rollback', to: 'chess#rollback'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end
