@@ -25,3 +25,14 @@ the controllers.
   - Board(array of object instances) : belongs to Game
 - Probably use OAuth to help maintain data persistence throughout the game, or a
 temporary Game instance that will expire if not associated with a User.
+
+###Update for December
+- Created models for database
+   - Games: Store Player/ Cpu data
+   - Turn: Stores board state, belongs to Games, games_id as foreign key    required reference
+- Session stores Games id and count. Now the game maintains state throughout the session.
+- Bugs:
+  - king and pawn moves have some slight issues.
+- AI is improved, but will still need work.
+- Pawn impassant move not yet integrated.
+- User model w/ OAuth to be implemented next.
