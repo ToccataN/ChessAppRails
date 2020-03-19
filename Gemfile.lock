@@ -103,7 +103,7 @@ GEM
     nio4r (2.1.0)
     nokogiri (1.8.1)
       mini_portile2 (~> 2.3.0)
-    pg (0.21.0)
+    pg (1.2.3)
     public_suffix (2.0.5)
     puma (3.9.0)
     rack (2.0.3)
